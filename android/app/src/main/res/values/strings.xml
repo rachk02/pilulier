@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Pilulier</string>
+  <string name="canal_rappels">Rappels de prise</string>
+  <string name="canal_rappels_desc">L\'heure d\'un médicament est arrivée.</string>
+  <string name="canal_rappels_muet">Rappels de prise (sans sonnerie)</string>
+</resources>

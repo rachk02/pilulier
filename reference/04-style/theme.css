@@ -1,0 +1,211 @@
+/* ==========================================================================
+   THEME.CSS  —  « PLANCHE TECHNIQUE »
+   --------------------------------------------------------------------------
+   Papier kaki, encre, monospace, filets d'un pixel. Aucun arrondi, aucune
+   ombre, aucun dégradé décoratif : la hiérarchie vient des filets, des
+   capitales espacées et du vide.
+   C'est le seul fichier a modifier pour rehabiller toute l'application.
+   ========================================================================== */
+
+/* ---------- Fonte embarquee (aucun appel reseau, marche hors-ligne) ------- */
+@font-face {
+  font-family: "PilulierMono";
+  src: url("/fonts/mono-regular.woff") format("woff");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "PilulierMono";
+  src: url("/fonts/mono-bold.woff") format("woff");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* ---------- 1. PAPIER ET ENCRE ------------------------------------- */
+  --paper:      #cdc499;   /* fond general                */
+  --paper-hi:   #d4cca4;   /* panneau, legerement plus clair */
+  --paper-lo:   #c2b98c;   /* creux, piste de jauge       */
+  --paper-dim:  #b8ae7e;   /* zone inactive               */
+
+  --ink:        #1e1c14;   /* texte principal             */
+  --ink-2:      #494430;   /* texte secondaire            */
+  --ink-3:      #6d6750;   /* micro-libelles, unites      */
+  --ink-inv:    #ded6b0;   /* texte sur fond encre        */
+
+  --rule:       #9a9169;   /* filet standard              */
+  --rule-soft:  #b3a97f;   /* filet discret               */
+  --rule-hard:  #6e6749;   /* filet appuye                */
+
+  --overlay:    rgba(30, 28, 20, .62);
+
+  /* ---------- 2. ACCENTS (rares, jamais decoratifs) ------------------- */
+  --accent:     #8f3122;   /* rouge oxyde : urgence, retard, alarme */
+  --accent-ink: #f0e7c4;
+  --ok:         #3d6630;   /* vert olive : valide                   */
+  --warn:       #8a6218;   /* ocre : attention                      */
+  --bad:        #8f3122;
+  --info:       #2f5068;
+
+  /* Poses sur l'encre (le bandeau de confirmation), les etats doivent etre
+     eclaircis : les valeurs ci-dessus sont calculees pour le papier.        */
+  --ok-on-ink:  #9fc07f;
+  --bad-on-ink: #e2907e;
+
+  /* Fonds tramés des états (très légers, jamais saturés) */
+  --ok-bg:   rgba(61, 102, 48, .16);
+  --warn-bg: rgba(138, 98, 24, .18);
+  --bad-bg:  rgba(143, 49, 34, .16);
+  --info-bg: rgba(47, 80, 104, .14);
+
+  /* Alias conserves pour ne rien casser dans les composants */
+  --brand-500: var(--ink);
+  --bg: var(--paper);
+  --surface: var(--paper-hi);
+  --surface-2: var(--paper-lo);
+  --surface-3: var(--paper-dim);
+  --text: var(--ink);
+  --text-soft: var(--ink-2);
+  --text-mute: var(--ink-3);
+  --line: var(--rule-soft);
+  --line-strong: var(--rule);
+
+  /* ---------- 3. GEOMETRIE ------------------------------------------- */
+  --r-xs: 0; --r-sm: 0; --r-md: 0; --r-lg: 0; --r-xl: 0; --r-2xl: 0; --r-pill: 0;
+  --hair: 1px;             /* epaisseur du filet standard */
+  --hair-hard: 2px;
+
+  /* ---------- 4. OMBRES : aucune ------------------------------------- */
+  --sh-1: none; --sh-2: none; --sh-3: none; --sh-4: none; --sh-brand: none;
+  --ring: 0 0 0 2px var(--ink);
+
+  /* ---------- 5. TYPOGRAPHIE ----------------------------------------- */
+  --font: "PilulierMono", ui-monospace, "SF Mono", "Roboto Mono", Menlo,
+          Consolas, "DejaVu Sans Mono", monospace;
+  --font-num: var(--font);
+
+  --fs-xs: .6875rem;   /* micro-libelles      */
+  --fs-sm: .8125rem;
+  --fs-md: .9375rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: 1.75rem;
+  --fs-3xl: 2.25rem;
+  --fs-4xl: 3.5rem;
+
+  --fw-normal: 400;
+  --fw-medium: 400;
+  --fw-bold: 700;
+  --fw-black: 700;
+
+  --lh-tight: 1.2;
+  --lh-normal: 1.55;
+  --tracking-tight: 0;
+  --tracking-label: .16em;   /* capitales espacees des micro-libelles */
+  --tk-3: .1em;              /* interlettrages intermediaires          */
+  --tk-2: .08em;
+  --tk-1: .06em;
+  --tk-num: .04em;           /* chiffres tabulaires                    */
+  --tk-body: .02em;          /* texte courant                          */
+
+  /* Les micro-libelles sont en capitales sur la planche. Une autre peau
+     peut remettre cette propriete a `none` sans toucher a app.css.       */
+  --tt-label: uppercase;
+
+  /* ---------- 6. ESPACEMENTS ----------------------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 56px;
+
+  /* ---------- 7. MOUVEMENT : reduit au strict necessaire -------------- */
+  --ease-out: cubic-bezier(.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+  --spring: var(--ease-out);
+  --spring-soft: var(--ease-out);
+  --t-fast: 80ms;
+  --t-base: 130ms;
+  --t-slow: 130ms;
+  --t-lazy: 200ms;
+
+  /* ---------- 8. GABARIT --------------------------------------------- */
+  --app-max: 560px;
+  --tabbar-h: 62px;
+  --topbar-h: 56px;
+  --touch: 48px;
+}
+
+/* ==========================================================================
+   NEGATIF — la meme planche, tiree en blanc sur encre. Pour la nuit.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:     #16150e;
+    --paper-hi:  #1e1c13;
+    --paper-lo:  #26241a;
+    --paper-dim: #2e2b1f;
+    --ink:       #d8d0aa;
+    --ink-2:     #a79f7e;
+    --ink-3:     #7c765c;
+    --ink-inv:   #16150e;
+    --rule:      #514c37;
+    --rule-soft: #3b3728;
+    --rule-hard: #6f684d;
+    --overlay:   rgba(0, 0, 0, .74);
+    --accent:    #c65a44;
+    --accent-ink:#16150e;
+    --ok:        #7d9e5f; --warn: #c99a3c; --bad: #c65a44; --info: #6f9ab5;
+    --ok-bg:   rgba(125, 158, 95, .16);
+    --warn-bg: rgba(201, 154, 60, .16);
+    --bad-bg:  rgba(198, 90, 68, .16);
+    --info-bg: rgba(111, 154, 181, .14);
+    --ring: 0 0 0 2px var(--ink);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:     #16150e;
+  --paper-hi:  #1e1c13;
+  --paper-lo:  #26241a;
+  --paper-dim: #2e2b1f;
+  --ink:       #d8d0aa;
+  --ink-2:     #a79f7e;
+  --ink-3:     #7c765c;
+  --ink-inv:   #16150e;
+  --rule:      #514c37;
+  --rule-soft: #3b3728;
+  --rule-hard: #6f684d;
+  --overlay:   rgba(0, 0, 0, .74);
+  --accent:    #c65a44;
+  --accent-ink:#16150e;
+  --ok:        #7d9e5f; --warn: #c99a3c; --bad: #c65a44; --info: #6f9ab5;
+  --ok-bg:   rgba(125, 158, 95, .16);
+  --warn-bg: rgba(201, 154, 60, .16);
+  --bad-bg:  rgba(198, 90, 68, .16);
+  --info-bg: rgba(111, 154, 181, .14);
+  --ring: 0 0 0 2px var(--ink);
+}
+
+/* ==========================================================================
+   CONFORT DE LECTURE
+   Le style de reference emploie de tres petits caracteres. Ici l'utilisateur
+   a 66 ans : les micro-libelles restent petits (ce sont des reperes), mais
+   tout ce qui sert a agir grandit.
+   ========================================================================== */
+:root[data-scale="large"] {
+  --fs-xs: .75rem;   --fs-sm: .9375rem; --fs-md: 1.0625rem; --fs-lg: 1.3125rem;
+  --fs-xl: 1.625rem; --fs-2xl: 2rem;    --fs-3xl: 2.625rem; --fs-4xl: 4rem;
+  --touch: 56px;
+}
+:root[data-scale="xlarge"] {
+  --fs-xs: .8125rem; --fs-sm: 1.0625rem; --fs-md: 1.1875rem; --fs-lg: 1.5rem;
+  --fs-xl: 1.875rem; --fs-2xl: 2.25rem;  --fs-3xl: 3rem;     --fs-4xl: 4.25rem;
+  --touch: 64px;
+}
+
+/* Contraste renforce : encre plus noire, filets plus marques. */
+:root[data-contrast="high"] {
+  --ink: #0c0b06; --ink-2: #241f13; --ink-3: #3d3826;
+  --rule: #5f593f; --rule-soft: #7b7454; --rule-hard: #33301f;
+  --paper: #d6cfa8; --paper-hi: #ded7b3;
+}
+:root[data-contrast="high"][data-theme="dark"],
+:root[data-contrast="high"]:not([data-theme="light"]) {
+  --ink: #f2ecd0; --ink-2: #cec6a2; --ink-3: #a49c7c;
+  --rule: #776f52; --rule-soft: #5a5540;
+}

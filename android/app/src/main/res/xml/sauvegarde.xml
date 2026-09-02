@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Le dossier de la WebView contient IndexedDB et localStorage : c'est la
+     que vivent le traitement et les prises. On le sauvegarde, et rien d'autre. -->
+<full-backup-content>
+  <include domain="database" path="."/>
+  <include domain="file" path="app_webview"/>
+  <exclude domain="file" path="app_webview/Default/GPUCache"/>
+</full-backup-content>

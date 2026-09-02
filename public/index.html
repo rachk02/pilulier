@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<title>Pilulier — suivi des prises de médicaments</title>
+<meta name="description" content="Rappels d'heures de prise, plusieurs profils, suivi de l'observance et du stock. Fonctionne hors-ligne, installable sur Android.">
+<meta name="theme-color" content="#cdc499">
+<meta name="color-scheme" content="light dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pilulier">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/anim.css">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<div id="splash">
+  <div class="mark">
+    <div id="splash-mark"></div>
+    <b>Pilulier</b>
+    <small>Chargement</small>
+  </div>
+</div>
+
+<div id="app"></div>
+
+<noscript>
+  <div style="padding:32px;font-family:system-ui;max-width:520px;margin:auto">
+    <h1>JavaScript est nécessaire</h1>
+    <p>Cette application fonctionne entièrement sur ton téléphone, sans serveur.
+       Active JavaScript pour l'utiliser.</p>
+  </div>
+</noscript>
+
+<script type="module">
+  /* La marque est dessinee par le code, comme tout le reste : on la trace des
+     que le module est la, avant meme que l'application ne demarre. */
+  import { logoMark } from '/js/illus.js';
+  const host = document.getElementById('splash-mark');
+  if (host) host.innerHTML = logoMark({ size: 100, w: 5 });
+</script>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

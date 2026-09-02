@@ -1,0 +1,178 @@
+/* ==========================================================================
+   doc.css — la documentation, dans la meme planche que l'application.
+   Elle ne definit aucune valeur : tout vient de theme.css.
+   ========================================================================== */
+*,*::before,*::after { box-sizing:border-box }
+* { margin:0; padding:0 }
+body { font-family:var(--font); font-size:var(--fs-md); line-height:var(--lh-normal);
+       color:var(--ink); background:var(--paper); -webkit-font-smoothing:antialiased }
+svg { display:block }
+a { color:var(--ink); text-underline-offset:3px }
+code, .mono { font-family:var(--font) }
+
+/* ---------- bandeau superieur : la plaque signaletique ---------- */
+.plate { position:sticky; top:0; z-index:20; background:var(--paper);
+         border-bottom:var(--hair) solid var(--rule); display:flex; align-items:stretch;
+         overflow-x:auto; scrollbar-width:none }
+.plate::-webkit-scrollbar { display:none }
+.plate-mark { display:flex; align-items:center; gap:var(--s-3); padding:var(--s-3) var(--s-4);
+              border-right:var(--hair) solid var(--rule); flex:none }
+.plate-mark span { width:26px; height:26px; flex:none }
+.plate-mark b { font-size:var(--fs-sm); text-transform:uppercase;
+                letter-spacing:var(--tracking-label); white-space:nowrap }
+.plate-cell { padding:var(--s-2) var(--s-4); border-right:var(--hair) solid var(--rule);
+              flex:none; min-width:96px }
+.plate-cell small { display:block; font-size:var(--fs-xs); color:var(--ink-3);
+                    text-transform:uppercase; letter-spacing:var(--tracking-label) }
+.plate-cell b { font-size:var(--fs-sm); font-variant-numeric:tabular-nums; white-space:nowrap }
+
+/* ---------- gabarit deux colonnes ---------- */
+.wrap { display:grid; grid-template-columns:250px 1fr; align-items:start;
+        max-width:1180px; margin-inline:auto }
+.index { position:sticky; top:var(--topbar-h); max-height:calc(100dvh - var(--topbar-h));
+         overflow-y:auto; padding:var(--s-5) var(--s-3) var(--s-10) var(--s-4);
+         border-right:var(--hair) solid var(--rule) }
+.index h2 { font-size:var(--fs-xs); text-transform:uppercase;
+            letter-spacing:var(--tracking-label); color:var(--ink-3);
+            margin:var(--s-5) 0 var(--s-2); padding-bottom:4px;
+            border-bottom:var(--hair) solid var(--rule-soft) }
+.index h2:first-child { margin-top:0 }
+.index a { display:flex; align-items:center; gap:var(--s-2); padding:6px var(--s-2);
+           font-size:var(--fs-sm); text-decoration:none; color:var(--ink-2);
+           border:var(--hair) solid transparent }
+.index a:hover { border-color:var(--rule-soft) }
+.index a.on { background:var(--ink); color:var(--paper) }
+.index a i { width:14px; height:14px; flex:none; display:block; opacity:.7 }
+.index a.on i { opacity:1 }
+
+main { padding:var(--s-6) var(--s-5) var(--s-12); min-width:0 }
+section { margin-bottom:var(--s-12); scroll-margin-top:calc(var(--topbar-h) + var(--s-4)) }
+section > h2 { display:flex; align-items:center; gap:var(--s-3); font-size:var(--fs-xl);
+               letter-spacing:var(--tracking-tight); margin-bottom:var(--s-2) }
+section > h2 span.n { display:grid; place-items:center; width:26px; height:26px; flex:none;
+                      border:var(--hair) solid var(--ink); font-size:var(--fs-xs) }
+section > .lead { color:var(--ink-2); margin-bottom:var(--s-5);
+                  padding-bottom:var(--s-4); border-bottom:var(--hair) solid var(--rule) }
+h3 { font-size:var(--fs-lg); margin:var(--s-6) 0 var(--s-2) }
+h4 { font-size:var(--fs-md); margin:var(--s-4) 0 var(--s-2);
+     text-transform:var(--tt-label); letter-spacing:var(--tracking-label);
+     color:var(--ink-2) }
+p { margin-bottom:var(--s-3); max-width:64ch }
+ul, ol { margin:0 0 var(--s-4) var(--s-5); max-width:64ch }
+li { margin-bottom:6px }
+strong { font-weight:var(--fw-bold) }
+em { font-style:normal; background:var(--ink); color:var(--paper); padding:0 4px }
+
+/* ---------- blocs ---------- */
+.panel { border:var(--hair) solid var(--rule); background:var(--paper-hi);
+         padding:var(--s-4); margin-bottom:var(--s-4) }
+.panel-hd { display:flex; align-items:center; gap:var(--s-2); font-size:var(--fs-xs);
+            text-transform:uppercase; letter-spacing:var(--tracking-label);
+            color:var(--ink-3); padding-bottom:var(--s-2); margin-bottom:var(--s-3);
+            border-bottom:var(--hair) solid var(--rule) }
+.panel-hd svg { width:15px; height:15px }
+
+pre { background:var(--paper-lo); border:var(--hair) solid var(--rule);
+      padding:var(--s-3); overflow-x:auto; font-size:var(--fs-sm); line-height:1.6;
+      margin-bottom:var(--s-4) }
+pre .c { color:var(--ink-3) }
+
+table { width:100%; border-collapse:collapse; font-size:var(--fs-sm);
+        margin-bottom:var(--s-4) }
+th { text-align:left; font-size:var(--fs-xs); text-transform:uppercase;
+     letter-spacing:var(--tracking-label); color:var(--ink-3);
+     border-bottom:var(--hair) solid var(--rule-hard); padding:6px 8px 6px 0 }
+td { border-bottom:var(--hair) solid var(--rule-soft); padding:8px 8px 8px 0;
+     vertical-align:top }
+td:first-child { white-space:nowrap; font-weight:var(--fw-bold) }
+
+.note { display:flex; gap:var(--s-3); padding:var(--s-3);
+        border:var(--hair) solid var(--info); background:var(--info-bg);
+        margin-bottom:var(--s-4); align-items:flex-start; max-width:64ch }
+.note svg { width:17px; height:17px; flex:none; margin-top:2px; color:var(--info) }
+.note b { display:block; font-size:var(--fs-xs); text-transform:uppercase;
+          letter-spacing:var(--tracking-label); margin-bottom:3px }
+.note.warn { border-color:var(--warn); background:var(--warn-bg) }
+.note.warn svg { color:var(--warn) }
+.note.bad { border-color:var(--accent); background:var(--bad-bg) }
+.note.bad svg { color:var(--accent) }
+
+.rule-list { border-left:var(--hair) solid var(--rule); border-top:var(--hair) solid var(--rule) }
+.rule-list > div { display:flex; gap:var(--s-3); padding:var(--s-3);
+                   border-right:var(--hair) solid var(--rule);
+                   border-bottom:var(--hair) solid var(--rule);
+                   background:var(--paper-hi) }
+.rule-list b { flex:0 0 26px; display:grid; place-items:center; height:26px;
+               border:var(--hair) solid var(--ink); font-size:var(--fs-xs) }
+
+.tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+         border-left:var(--hair) solid var(--rule); border-top:var(--hair) solid var(--rule);
+         margin-bottom:var(--s-4) }
+.tiles > div { padding:var(--s-3); background:var(--paper-hi);
+               border-right:var(--hair) solid var(--rule);
+               border-bottom:var(--hair) solid var(--rule) }
+.tiles b { display:block; font-size:var(--fs-2xl); font-variant-numeric:tabular-nums;
+           line-height:1.1 }
+.tiles small { display:block; margin-top:4px; font-size:var(--fs-xs); color:var(--ink-3);
+               text-transform:uppercase; letter-spacing:.08em }
+
+.gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(74px,1fr)); gap:0;
+           border-left:var(--hair) solid var(--rule); border-top:var(--hair) solid var(--rule);
+           margin-bottom:var(--s-4) }
+.gallery > div { padding:var(--s-3) 4px; text-align:center; background:var(--paper-hi);
+                 border-right:var(--hair) solid var(--rule);
+                 border-bottom:var(--hair) solid var(--rule) }
+.gallery svg { width:26px; height:26px; margin:0 auto }
+.gallery small { display:block; margin-top:6px; font-size:10px; color:var(--ink-3) }
+
+.scenes-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:0;
+              border-left:var(--hair) solid var(--rule); border-top:var(--hair) solid var(--rule) }
+.scenes-row > div { padding:var(--s-3); background:var(--paper-hi);
+                    border-right:var(--hair) solid var(--rule);
+                    border-bottom:var(--hair) solid var(--rule) }
+.scenes-row svg { width:100%; height:auto }
+
+footer { border-top:var(--hair) solid var(--rule); padding:var(--s-5) var(--s-4);
+         font-size:var(--fs-xs); color:var(--ink-3); text-align:center }
+
+/* ---------- petit ecran : l'index passe au-dessus ---------- */
+@media (max-width:860px) {
+  .wrap { grid-template-columns:1fr }
+  .index { position:static; max-height:none; border-right:none;
+           border-bottom:var(--hair) solid var(--rule);
+           display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+           gap:0 var(--s-4); padding:var(--s-4) }
+  .index h2 { grid-column:1/-1 }
+  main { padding:var(--s-5) var(--s-4) var(--s-10) }
+  .tiles { grid-template-columns:repeat(2,1fr) }
+  .plate-mark b { display:none }
+}
+@media print {
+  .plate, .index { display:none }
+  .wrap { grid-template-columns:1fr }
+  body { background:#fff }
+  section { break-inside:avoid }
+}
+
+/* ==========================================================================
+   LE PLAN EN VOLUMES
+   ========================================================================== */
+.plan { border:1px solid var(--rule); background:var(--paper-hi);
+        padding:var(--s-4) var(--s-3); margin:var(--s-3) 0 var(--s-2);
+        overflow-x:auto }
+.plan svg { width:100%; min-width:520px; height:auto; display:block }
+.plan-key { display:flex; flex-wrap:wrap; gap:var(--s-4); margin-bottom:var(--s-3);
+            font-size:var(--fs-xs); color:var(--ink-2) }
+.plan-key span { display:inline-flex; align-items:center; gap:8px }
+.plan-key i { display:block; width:34px; height:26px; flex:none }
+.plan-key i svg { width:100%; height:100% }
+.plan-note { font-size:var(--fs-sm) }
+
+/* La liste numerotee du premier lancement : des reperes, pas des puces. */
+.steps { counter-reset:e; list-style:none; padding:0; margin:var(--s-3) 0 }
+.steps li { counter-increment:e; position:relative; padding:var(--s-3) 0 var(--s-3) 34px;
+            border-bottom:1px solid var(--rule-soft) }
+.steps li::before { content:counter(e); position:absolute; left:0; top:var(--s-3);
+                    width:22px; height:22px; display:grid; place-items:center;
+                    border:1px solid var(--ink); font-size:11px; font-weight:700 }
+.steps li b { display:block }

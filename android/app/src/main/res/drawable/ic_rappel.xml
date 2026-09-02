@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  L'icone de notification doit etre une silhouette blanche sur fond
+  transparent : Android la reduit a un pochoir, tout aplat de couleur y
+  deviendrait un carre blanc. C'est donc la gelule du logo, en plein,
+  sans le cadre de coupe ni la hachure.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+  <group android:pivotX="12" android:pivotY="12" android:rotation="-45">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M7.6,7.6h8.8a4.4,4.4 0 0 1 0,8.8h-8.8a4.4,4.4 0 0 1 0,-8.8z"/>
+    <path android:fillColor="#FF000000"
+        android:pathData="M11.4,7.6h1.2v8.8h-1.2z"/>
+  </group>
+</vector>

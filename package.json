@@ -1,0 +1,12 @@
+{
+  "name": "pilulier",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pilulier — suivi des prises de medicaments, multi-profils, hors-ligne, installable sur Android.",
+  "scripts": {
+    "dev": "npx --yes serve public -l 5173",
+    "start": "npx --yes serve public -l 5173"
+  },
+  "license": "MIT",
+  "type": "module"
+}

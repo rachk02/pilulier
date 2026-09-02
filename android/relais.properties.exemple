@@ -1,0 +1,21 @@
+# ============================================================================
+# android/relais.properties — l'adresse du relais, posee a la compilation.
+#
+#   1. copie ce fichier en `relais.properties` (sans .exemple)
+#   2. mets ton adresse
+#   3. `node tools/sync-android.mjs` la depose dans les assets de l'APK
+#      (le build.gradle l'appelle tout seul)
+#
+# Le vrai fichier est ignore par Git : il ne partira jamais dans le depot.
+#
+# A savoir, et c'est important : cela evite de taper l'adresse sur chaque
+# telephone, cela la garde hors de l'historique Git — mais cela ne la rend
+# PAS secrete. Une APK est une archive : `unzip app.apk` puis `grep` la
+# retrouvent en dix secondes. Aucun procede n'y change rien. Ce qui protege
+# les donnees, c'est qu'elles sont chiffrees AVANT de partir, avec une cle
+# que le relais n'a jamais vue.
+#
+# On peut aussi passer par l'environnement, ce qui est plus pratique en
+# integration continue :   PILULIER_RELAIS=https://… node tools/sync-android.mjs
+# ============================================================================
+relais=https://mon-projet.vercel.app/api/sync

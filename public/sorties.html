@@ -1,0 +1,116 @@
+<!doctype html><meta charset="utf-8"><title>Pilulier — planche des sorties</title>
+<link rel="stylesheet" href="/css/theme.css">
+<style>
+ body{background:var(--paper);color:var(--ink);font-family:var(--font);margin:0 auto;padding:20px;
+      font-size:13px;line-height:1.5;max-width:820px}
+ h1{font-size:12px;text-transform:uppercase;letter-spacing:.16em;margin:0 0 6px;
+    padding-bottom:8px;border-bottom:2px solid var(--ink)}
+ .sub{font-size:11px;color:var(--ink-3);margin:0 0 22px}
+ section{margin-bottom:26px}
+ h2{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--ink-3);
+    margin:0 0 4px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+ h2 em{font-style:normal;color:var(--ink-3);opacity:.75;letter-spacing:0;
+       text-transform:none;font-size:10px}
+ .why{font-size:11px;color:var(--ink-2);margin:0 0 8px;max-width:78ch}
+ .sheet{position:relative;max-width:64ch;background:var(--paper-hi);border:1px solid var(--rule);
+        padding:16px 18px;white-space:pre-wrap;word-break:break-word;
+        font-family:var(--font);font-size:12.5px;line-height:1.55}
+ /* Les reperes de coupe : la meme signature que les panneaux de l'application. */
+ .sheet::before,.sheet::after{content:"";position:absolute;width:9px;height:9px;
+   border:2px solid var(--ink);pointer-events:none}
+ .sheet::before{top:5px;left:5px;border-right:none;border-bottom:none}
+ .sheet::after{bottom:5px;right:5px;border-left:none;border-top:none}
+ .sheet.raw{font-size:11px;line-height:1.45;color:var(--ink-2);max-width:none}
+ .qr{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+ .qr svg{width:190px;height:190px;background:var(--paper-hi);padding:10px;
+         border:1px solid var(--rule)}
+ .foot{font-size:10px;color:var(--ink-3);margin-top:6px}
+</style>
+<h1>Pilulier — ce que l'application produit</h1>
+<p class="sub">Chaque bloc est la <strong>vraie sortie</strong> du code, rendue avec la
+fonte du projet. Aucun emoji : les statuts s'écrivent [x] [!] [-] [ ].</p>
+
+<section>
+  <h2>Bulletin du jour <em>partagé par messagerie</em></h2>
+  <p class="why">Un bouton, un texte collé dans WhatsApp. Il tient dans un écran de
+  téléphone et se lit à voix haute sans buter sur un pictogramme.</p>
+  <div class="sheet" id="jour"></div>
+</section>
+
+<section>
+  <h2>Bilan de la semaine <em>partagé par messagerie</em></h2>
+  <p class="why">La barre ▮▯ est un caractère, pas une image : elle survit à la copie,
+  au collage, et à un téléphone qui n'a pas la même police.</p>
+  <div class="sheet" id="semaine"></div>
+</section>
+
+<section>
+  <h2>Liste pour la pharmacie <em>partagée ou imprimée</em></h2>
+  <p class="why">Calculée sur le stock réel et le nombre de jours demandés. Le total
+  n'apparaît que si les prix sont renseignés.</p>
+  <div class="sheet" id="pharmacie"></div>
+</section>
+
+<section>
+  <h2>Fiche d'urgence <em>texte du QR</em></h2>
+  <p class="why">Ce texte est ce que contient le carré ci-dessous. Il est lisible sans
+  l'application : un secouriste scanne, il lit.</p>
+  <div class="sheet" id="urgence"></div>
+</section>
+
+<section>
+  <h2>Fiche d'urgence <em>imprimée, à découper et plier</em></h2>
+  <div class="qr">
+    <div id="qr"></div>
+    <div class="sheet" style="flex:1;min-width:260px" id="carte"></div>
+  </div>
+  <p class="foot">Le QR est encodé par js/qr.js — 40 versions, 4 niveaux de correction,
+  écrit à la main. Aucune image, aucun service en ligne.</p>
+</section>
+
+<section>
+  <h2>Export agenda <em>pilulier.ics</em></h2>
+  <p class="why">C'est le filet de rappel le plus fiable : l'agenda du téléphone sonne
+  même application fermée. À ré-exporter après chaque changement d'ordonnance.</p>
+  <div class="sheet raw" id="ics"></div>
+</section>
+
+<section>
+  <h2>Sauvegarde <em>pilulier.sql</em></h2>
+  <p class="why">Un vrai dump SQLite. Les données sortent du téléphone dans un format
+  que n'importe qui peut rouvrir dans dix ans, sans cette application.</p>
+  <div class="sheet raw" id="sql"></div>
+</section>
+
+<script type="module">
+import { initStore, activeProfile, db } from '/js/store.js';
+import { dayText, weekText, refillText, emergencyText } from '/js/bulletin.js';
+import { buildICS } from '/js/ics.js';
+import { svg as qrSvg } from '/js/qr.js';
+
+await initStore();
+/* Cette planche montre des sorties : il lui faut donc des donnees. Si
+   l'application est vide — c'est son etat normal a l'installation — on charge
+   l'exemple fictif, le temps de la demonstration. */
+const { estVierge, chargerExemple } = await import('/js/store.js');
+if (estVierge()) chargerExemple();
+const p = activeProfile();
+
+const put = (id, txt) => { document.getElementById(id).textContent = txt; };
+const clip = (t, n) => {
+  const l = t.split('\n');
+  return l.length <= n ? t : l.slice(0, n).join('\n') + `\n… (${l.length - n} lignes de plus)`;
+};
+
+put('jour', dayText(p));
+put('semaine', weekText(p));
+put('pharmacie', refillText(p, 30));
+const urg = emergencyText(p);
+put('urgence', urg);
+put('carte', urg);
+document.getElementById('qr').innerHTML = qrSvg(urg, { ecc: 'M', quiet: 2, px: 380 });
+const ics = buildICS(p, { days: 30 });
+put('ics', clip(ics.text, 26));
+put('sql', clip(db.toSQL(), 22));
+document.body.dataset.pret = '1';
+</script>

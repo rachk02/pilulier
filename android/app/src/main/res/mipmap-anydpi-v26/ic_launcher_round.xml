@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android decoupe l'icone a la forme choisie par le lanceur : le premier
+     plan porte donc 26 % de marge de securite, comme le maskable du PWA. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+  <background android:drawable="@color/papier_icone"/>
+  <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+  <monochrome android:drawable="@drawable/ic_rappel"/>
+</adaptive-icon>

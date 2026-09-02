@@ -1,0 +1,36 @@
+# ============================================================================
+# Ce que Git ne doit jamais voir.
+#
+# Git n'oublie rien : un fichier commite une fois reste dans l'historique,
+# meme efface au commit suivant. Cette liste existe donc AVANT le premier
+# `git add`, pas apres.
+# ============================================================================
+
+# --- L'adresse du relais -----------------------------------------------------
+# Elle n'est pas secrete (une APK s'ouvre avec unzip), mais elle n'a rien a
+# faire dans un depot : c'est une adresse de famille, pas du code.
+android/relais.properties
+.env
+.env.*
+
+# --- Les cles de signature ---------------------------------------------------
+# Celles-la, en revanche, sont de VRAIS secrets : qui les a peut publier une
+# mise a jour signee de ton application.
+*.jks
+*.keystore
+android/keystore.properties
+
+# --- Ce que la machine fabrique ----------------------------------------------
+android/local.properties          # chemin du SDK, propre a chaque machine
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/web/  # copie de public/, refaite a chaque build
+node_modules/
+shots/                            # captures des tests
+.vercel/
+
+# --- Le bruit des systemes ---------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp

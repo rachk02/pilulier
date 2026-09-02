@@ -1,0 +1,38 @@
+/* ==========================================================================
+   ANIM.CSS — volontairement minimal.
+   Le style de reference est une planche imprimee : rien ne rebondit, rien ne
+   scintille. Il ne reste que ce qui sert a comprendre qu'un panneau arrive
+   ou repart. Tout est court, lineaire, et desactivable.
+   ========================================================================== */
+
+@keyframes fadeIn   { from { opacity:0 } to { opacity:1 } }
+@keyframes fadeOut  { from { opacity:1 } to { opacity:0 } }
+@keyframes sheetUp  { from { transform:translate3d(0,12px,0); opacity:0 }
+                      to   { transform:none; opacity:1 } }
+@keyframes sheetDown{ from { transform:none; opacity:1 }
+                      to   { transform:translate3d(0,12px,0); opacity:0 } }
+@keyframes blink    { 0%,100% { opacity:1 } 50% { opacity:.25 } }
+
+.view   { animation: fadeIn var(--t-base) var(--ease-out) both }
+.a-fade { animation: fadeIn var(--t-base) var(--ease-out) both }
+
+/* Le curseur clignotant d'une prise en attente : seul mouvement continu de
+   l'application, et il porte une information. */
+.blink { animation: blink 1.4s steps(1, end) infinite }
+
+/* Les listes n'entrent plus en cascade : elles sont simplement la. */
+.stagger > * { animation: none }
+
+/* Retour tactile : un simple assombrissement, pas de mise a l'echelle. */
+.pressable { transition: background-color var(--t-fast) linear,
+                         color var(--t-fast) linear,
+                         border-color var(--t-fast) linear }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:.01ms!important; animation-iteration-count:1!important;
+    transition-duration:.01ms!important; scroll-behavior:auto!important }
+}
+:root[data-motion="off"] *, :root[data-motion="off"] *::before, :root[data-motion="off"] *::after {
+  animation-duration:.01ms!important; animation-iteration-count:1!important;
+  transition-duration:.01ms!important }

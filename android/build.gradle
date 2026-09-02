@@ -1,0 +1,6 @@
+/* Le plugin Android est la seule chose qui se telecharge. L'application, elle,
+   ne depend d'aucune bibliotheque : ni AndroidX, ni Material, ni WebView
+   externe. C'est ce qui garde l'APK sous le mega-octet. */
+plugins {
+  id 'com.android.application' version '8.7.3' apply false
+}

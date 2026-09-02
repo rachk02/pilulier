@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Les memes valeurs que theme.css : le papier kaki et l'encre. Elles ne
+     servent qu'a la barre systeme et a l'ecran de demarrage, pour qu'il n'y
+     ait pas un flash blanc avant que la page s'affiche. -->
+<resources>
+  <color name="papier">#cdc499</color>
+  <color name="papier_nuit">#16150e</color>
+  <color name="encre">#1e1c14</color>
+  <color name="encre_nuit">#d8d0aa</color>
+  <!-- Le fond de l'icone ne suit pas le mode nuit : une icone de lanceur
+       qui change de couleur ne se retrouve plus. -->
+  <color name="papier_icone">#cdc499</color>
+</resources>

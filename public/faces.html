@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><title>planche</title>
+<style>
+ :root{--ink:#1e1c14;--paper-lo:#c2b98c}
+ body{background:#cdc499;margin:0;padding:16px;font:12px ui-monospace,monospace;color:#1e1c14}
+ .g{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+ .c{border:1px solid #9a9169;background:#c2b98c}
+ .c svg{display:block;width:100%}
+ h1{font-size:12px;text-transform:uppercase;letter-spacing:.16em;margin:0 0 12px}
+</style>
+<h1>Pilulier — planche de contact : 60 visages tirés par le code</h1>
+<div class="g" id="g"></div>
+<h1 style="margin-top:20px">Lisibilité en petit — 34 px (barre du haut) et 40 px (listes)</h1>
+<div id="small" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end"></div>
+<script type="module">
+import { seedMarkup } from './js/avatars.js';
+const g = document.getElementById('g');
+const biases = [{},{sex:'M'},{sex:'F'},{sex:'M',age:66},{sex:'F',age:70},{age:10}];
+for (let i=0;i<60;i++){
+  const d=document.createElement('div'); d.className='c';
+  d.innerHTML=seedMarkup(1000+i*7919, biases[i%biases.length]);
+  g.append(d);
+}
+const sm=document.getElementById('small');
+for (let i=0;i<14;i++){
+  for (const px of [34,40,58]){
+    const d=document.createElement('div'); d.className='c';
+    d.style.width=px+'px'; d.style.height=px+'px';
+    d.innerHTML=seedMarkup(1000+i*7919, biases[i%biases.length]);
+    sm.append(d);
+  }
+}
+</script>

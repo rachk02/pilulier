@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pilulier — la planche</title>
+<meta name="description" content="Documentation du projet Pilulier : ce qu'il fait, comment il est bâti, ce qu'il ne promet pas.">
+<meta name="theme-color" content="#cdc499">
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+<link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/doc.css">
+<script>
+/*
+ * La planche s'habille comme l'application, pas comme le telephone.
+ *
+ * Cette page est servie par l'application mais ne partage pas son code : elle
+ * s'affichait donc selon `prefers-color-scheme`, en sombre, alors que le
+ * reglage disait « clair ». On relit le meme miroir localStorage que db.js, et
+ * on pose les memes attributs — avant le premier rendu, pour qu'il n'y ait pas
+ * de clignotement. Aucun module, aucune dependance : quatre lignes en clair.
+ */
+(function () {
+  try {
+    var snap = JSON.parse(localStorage.getItem('pilulier:snapshot') || 'null');
+    var rows = (snap && snap.data && snap.data.settings && snap.data.settings.rows) || [];
+    var lu = {};
+    for (var i = 0; i < rows.length; i++) {
+      try { lu[rows[i].id] = JSON.parse(rows[i].value); } catch (e) { lu[rows[i].id] = rows[i].value; }
+    }
+    var r = document.documentElement;
+    if (lu.theme && lu.theme !== 'auto') r.setAttribute('data-theme', lu.theme);
+    r.setAttribute('data-scale', lu.scale || 'normal');
+    r.setAttribute('data-contrast', lu.contrast || 'normal');
+    r.setAttribute('data-motion', lu.motion === 'off' ? 'off' : 'on');
+  } catch (e) { /* premier lancement, ou stockage refuse : le theme du systeme fera l'affaire */ }
+})();
+</script>
+</head>
+<body>
+
+<div class="plate">
+  <div class="plate-mark"><span id="plate-logo"></span><b>Pilulier · la planche</b></div>
+  <div class="plate-cell"><small>Version</small><b id="v-version">—</b></div>
+  <div class="plate-cell"><small>Dépendances</small><b>0</b></div>
+  <div class="plate-cell"><small>Fichiers</small><b>46</b></div>
+  <div class="plate-cell"><small>Lignes</small><b>8 688</b></div>
+  <div class="plate-cell"><small>Images</small><b>0</b></div>
+  <div class="plate-cell"><small>Hors-ligne</small><b>intégral</b></div>
+  <div class="plate-cell"><small>Données</small><b>aucune</b></div>
+</div>
+
+<div class="wrap">
+<nav class="index" id="index"></nav>
+
+<main>
+
+<!-- ================================================================== -->
+<section id="projet">
+  <h2><span class="n">1</span> Ce que c'est</h2>
+  <p class="lead">Un carnet de prises de médicaments, construit autour d'une
+  besoin réel : une personne âgée, plusieurs médicaments par jour, des horaires
+  qui ne souffrent pas l'oubli, et un proche qui n'habite pas sous le même toit.
+  Tout ce qui suit découle de là.</p>
+  <p><strong>L'application s'installe vide.</strong> Aucun profil, aucun
+  traitement, aucune donnée de personne — c'est la seule position tenable pour
+  une application qui manipule des ordonnances. Le premier lancement demande à
+  qui elle va servir, et propose un exemple entièrement fictif à qui veut
+  d'abord regarder.</p>
+
+  <p>L'application tient sur un téléphone Android, fonctionne sans réseau, et
+  ne dépend de rien : ni bibliothèque, ni compte, ni serveur — à une exception
+  près, décrite plus bas, que l'on choisit d'activer ou non.</p>
+
+  <div class="tiles" id="tiles"></div>
+
+  <h3>Deux personnes, un traitement</h3>
+  <p>Le père avale les comprimés ; le fils veille. C'est de cette dissymétrie
+  que découle presque tout : le <strong>mode simple</strong> pour l'un, le
+  <strong>suivi à distance</strong> pour l'autre, le <strong>bulletin</strong>
+  qui relie les deux.</p>
+
+  <div class="note bad" data-ico="warn">
+    <div><b>Ce que l'application n'est pas</b>
+    Elle aide à ne rien oublier. Elle ne remplace ni l'ordonnance, ni le médecin,
+    ni le pharmacien. Elle ne dit jamais « arrête », elle dit « demande ».</div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="premier">
+  <h2><span class="n">2</span> Le premier lancement</h2>
+  <p class="lead">L'application arrive <strong>vide</strong>. Six écrans, jamais
+  plus, chacun tient sans défiler, chacun se saute. Le seul obligatoire est le
+  nom du profil — un carnet de prises sans savoir de qui n'est plus un carnet.</p>
+
+  <ol class="steps">
+    <li><b>Ce que c'est</b> — trois phrases : ça sonne, rien ne sort du
+    téléphone, plusieurs personnes possibles.</li>
+    <li><b>La langue</b> — proposée d'après celle du téléphone.</li>
+    <li><b>Pour qui</b> — pour soi, ou pour un proche. Cela ne change que la
+    façon dont l'application s'adresse à vous.</li>
+    <li><b>Le profil</b> — un prénom, et un portrait choisi parmi six tirés au
+    hasard. Rien d'autre : ni âge, ni groupe sanguin, ni médecin. Tout cela se
+    remplit plus tard, quand on aura une raison de le faire.</li>
+    <li><b>Par où commencer</b> — photographier une boîte, saisir un
+    médicament, ou voir un exemple d'abord.</li>
+    <li><b>Les rappels</b> — ce qu'Android peut faire taire, et le bouton qui
+    ouvre le réglage correspondant.</li>
+  </ol>
+
+  <div class="note" data-ico="shield">
+    <div><b>Aucune donnée de personne, nulle part</b>
+    Pas de profil créé automatiquement, pas d'ordonnance d'exemple tirée d'un
+    cas réel. Le seul jeu de données du dépôt est un profil
+    <strong>entièrement fictif</strong> — quatre médicaments courants choisis
+    pour montrer les cas de figure, aucune pathologie décrite — et il ne se
+    charge que si on le demande. <code>tools/check.mjs</code> échoue si un nom,
+    un numéro avec indicatif, un établissement de soin ou la description de
+    l'état de santé de quelqu'un réapparaît dans le dépôt.</div>
+  </div>
+
+  <h3>Plusieurs langues</h3>
+  <p>Le mécanisme est volontairement pauvre : <strong>la clé est la phrase
+  française</strong>. <code>t('Tout valider')</code> cherche une traduction et
+  rend le français s'il n'en trouve pas. Une phrase non traduite s'affiche donc
+  dans la langue d'origine plutôt que de laisser un trou.</p>
+  <p>Toutes les phrases traversent <code>el({ text })</code> : le crochet de
+  traduction est posé là, une fois, et l'application entière en bénéficie sans
+  qu'on ait eu à envelopper six cents chaînes. Les dates, les jours et les
+  séparateurs de milliers suivent la langue par <code>Intl</code>.</p>
+  <p>Ajouter une langue : un fichier dans <code>js/lang/</code>, une entrée dans
+  <code>LANGUES</code>. Rien d'autre. Français et anglais sont livrés.</p>
+
+  <h3>La devise</h3>
+  <p>Un prix est un nombre ; la devise n'était qu'une étiquette posée à
+  l'affichage. Passer du franc CFA à l'euro transformait
+  « 21 000 FCFA » en « 21 000 € » — une boîte d'aspirine au prix d'une voiture.
+  Le bug était silencieux, ce qui est le pire genre.</p>
+  <p>Désormais, changer de devise <strong>propose de convertir</strong> : le
+  dialogue montre le taux, ce que deviennent trois vrais prix du dossier, et
+  laisse corriger le taux à la main. Les taux sont embarqués — donc datés — et
+  l'application le dit ; seule la parité du franc CFA est exacte, elle est fixée
+  par traité. On ne convertit pas l'argent de quelqu'un dans son dos.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="demarrer">
+  <h2><span class="n">3</span> Démarrer</h2>
+  <p class="lead">Aucune dépendance à installer, aucune étape de compilation.
+  Il suffit de servir le dossier <code>public/</code> en HTTP — les modules ES
+  et le service worker ne fonctionnent pas en <code>file://</code>.</p>
+
+  <pre><span class="c"># en local, au choix</span>
+npx serve public -l 5173
+python3 -m http.server 5173 --directory public
+
+<span class="c"># avec la fonction de synchronisation branchée</span>
+node tools/dev-server.mjs        <span class="c"># port 5300</span></pre>
+
+  <h3>Déployer sur Vercel</h3>
+  <pre>npm i -g vercel
+vercel            <span class="c"># aperçu</span>
+vercel --prod     <span class="c"># production</span></pre>
+  <p>Par le site : <strong>New Project → Import</strong>, <em>Framework preset</em>
+  <code>Other</code>, <em>Output directory</em> <code>public</code>. Rien d'autre.
+  Le fichier <code>vercel.json</code> fait le reste.</p>
+
+  <h3>Installer sur le téléphone</h3>
+  <ol>
+    <li>Ouvrir l'adresse Vercel dans <strong>Chrome</strong> sur Android.</li>
+    <li>Menu ⋮ → <strong>Installer l'application</strong>.</li>
+    <li>Dans l'app : <strong>Réglages → Notifications système</strong> pour autoriser
+    les rappels.</li>
+    <li><strong>Paramètres Android → Applications → Pilulier → Batterie →
+    Sans restriction</strong>, sinon le système endort les rappels.</li>
+  </ol>
+  <div class="note" data-ico="shield">
+    <div><b>HTTPS obligatoire</b>
+    Les notifications et l'installation sur l'écran d'accueil l'exigent. Vercel
+    le fournit ; en local, <code>localhost</code> est considéré comme sûr.</div>
+  </div>
+</section>
+
+<!-- ================================================================== -->
+<section id="rappels">
+  <h2><span class="n">4</span> Les rappels</h2>
+  <p class="lead">Un navigateur ne peut pas réveiller un téléphone Android
+  endormi de façon fiable. C'est la limite qui a décidé de tout le reste — et
+  c'est la seule raison pour laquelle il existe une application Android.</p>
+
+  <table>
+    <thead><tr><th>Niveau</th><th>Ce que c'est</th><th>Fiabilité</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td><strong>Alarme système</strong> — <code>setAlarmClock()</code>,
+      le mécanisme du réveil du téléphone, puis une notification à
+      <strong>intention plein écran</strong> qui ouvre l'application elle-même
+      par-dessus le verrouillage. <em>Uniquement dans l'APK.</em></td>
+      <td>Sonne à la seconde près, veille profonde comprise</td></tr>
+      <tr><td>1</td><td><strong>Export vers l'agenda</strong> — un fichier <code>.ics</code>
+      avec une alarme récurrente par prise. C'est Android qui sonne.</td>
+      <td>Sonne même application fermée</td></tr>
+      <tr><td>2</td><td><strong>Notification système</strong> — affichée par le service
+      worker, une fois l'autorisation donnée.</td>
+      <td>Dépend de l'optimisation batterie</td></tr>
+      <tr><td>3</td><td><strong>Alarme plein écran</strong> — sonnerie en boucle,
+      vibration, boutons <em>Tout pris</em> / <em>Reporter</em>.</td>
+      <td>Application ouverte seulement</td></tr>
+    </tbody>
+  </table>
+  <h3>L'écran qui s'ouvre tout seul</h3>
+  <p>Le rappel n'est pas un écran dessiné en Java : c'est <strong>l'écran de
+  l'application</strong>, avec sa sonnerie, sa voix et ses vrais boutons. Il
+  s'ouvre même si l'application n'avait jamais été lancée.</p>
+  <p>Il a d'abord fallu se tromper pour le comprendre. La première version
+  appelait <code>startActivity()</code> depuis le récepteur d'alarme. Depuis
+  <strong>Android 10</strong>, un démarrage d'activité depuis l'arrière-plan est
+  purement ignoré : aucune erreur, aucun message, l'écran ne s'ouvrait jamais.
+  Il ne restait que la notification, et il fallait ouvrir l'application à la
+  main.</p>
+  <p>Le seul chemin qu'Android autorise encore est l'<strong>intention plein
+  écran</strong> — le mécanisme des réveils et des appels entrants : une
+  notification à haute importance qui porte <code>setFullScreenIntent()</code>,
+  plus la permission <code>USE_FULL_SCREEN_INTENT</code>. Le système lance
+  alors l'application lui-même, avec l'heure, le médicament et le profil ;
+  <code>alarm.js</code> les ramasse au démarrage, bascule sur le bon carnet et
+  ouvre son écran.</p>
+
+  <div class="note" data-ico="info">
+    <div><b>Une limite qui ne se contourne pas</b>
+    Téléphone verrouillé ou écran éteint, le rappel s'ouvre en grand. Téléphone
+    déverrouillé et en train d'être utilisé, Android affiche une bannière au
+    lieu d'interrompre ce qu'on fait. C'est la règle du système, pas un
+    réglage — et sur Android&nbsp;14, l'autorisation d'ouvrir un écran par-dessus
+    tout se demande explicitement : <em>Réglages → Rappels du système → Écran de
+    rappel plein format</em>.</div>
+  </div>
+
+  <h3>Qui sonne : le téléphone, ou l'application ?</h3>
+  <p>Un canal de notification Android est figé dès sa création : sa sonnerie ne
+  peut plus changer. Il en existe donc deux. Par défaut, la sonnerie de réveil
+  du téléphone accompagne la notification — c'est le filet de sécurité, celui
+  qui s'entend même quand le système refuse d'ouvrir l'écran. Elle s'arrête dès
+  que l'écran de l'application prend le relais, qui sonne alors avec sa propre
+  sonnerie et annonce le médicament à voix haute. <em>Réglages → Sonnerie du
+  système en secours</em> permet de l'éteindre.</p>
+
+  <div class="note warn" data-ico="refresh">
+    <div><b>À refaire après chaque changement d'ordonnance</b>
+    Ré-exporter le <code>.ics</code> : les rappels de l'agenda ne se mettent pas
+    à jour tout seuls. Le niveau 0, lui, se repose tout seul — à chaque
+    modification, à chaque retour au premier plan, et après un redémarrage.</div>
+  </div>
+
+  <h3>L'application Android</h3>
+  <p>Le dossier <code>android/</code> contient une <strong>coque native</strong>
+  autour de la même application. Elle n'apporte qu'une chose : le niveau 0
+  ci-dessus. Pour un traitement cardiaque, cette chose-là vaut le détour.</p>
+  <ul>
+    <li><strong>Aucune dépendance.</strong> Ni AndroidX, ni Material, ni
+    bibliothèque WebView. Sept fichiers Java. L'APK pèse moins d'un mégaoctet.</li>
+    <li><strong>Aucun serveur.</strong> L'application est servie depuis les
+    assets de l'APK, sous l'origine <code>https://pilulier.local/</code>.</li>
+    <li><strong>Le web garde toute la logique.</strong> <code>native.js</code>
+    envoie une liste de prises déjà calculée ; <code>Rappels.java</code> se
+    contente de poser les alarmes. Rien n'est calculé deux fois, donc l'écran et
+    la sonnerie ne peuvent pas se contredire.</li>
+    <li><strong>Le pont est minuscule</strong> — huit méthodes, dans
+    <code>Pont.java</code>. <code>check.mjs</code> vérifie que chaque méthode
+    appelée par le web existe bien côté Java.</li>
+  </ul>
+  <p>Deux réglages d'Android peuvent faire taire un rappel : l'autorisation
+  d'alarme exacte (Android&nbsp;12+) et l'optimisation de batterie.
+  <em>Réglages → Rappels du système</em> dit lesquels manquent et ouvre le
+  réglage Android correspondant d'un bouton — plutôt que d'expliquer un chemin
+  que personne ne suivra.</p>
+  <p>Compiler : <code>cd android &amp;&amp; ./gradlew assembleDebug</code>.
+  Le mode d'emploi complet est dans <code>android/README.md</code>.</p>
+
+  <h3>La voix</h3>
+  <p>À l'heure de la prise, le téléphone annonce à haute voix :
+  <em>« Il est huit heures. Un demi comprimé de Comprimé du soir, vingt-cinq
+  milligrammes. »</em> Les nombres et les unités sont écrits en toutes lettres
+  avant d'être prononcés — sinon la synthèse lit « m&nbsp;g ». Elle utilise la
+  synthèse vocale d'Android : aucun fichier, aucun réseau.</p>
+
+  <h3>Les sonneries</h3>
+  <p>Six sonneries — carillon, goutte, kora, douce, réveil, urgence — générées
+  en direct par Web Audio. Aucun <code>.mp3</code> : rien à télécharger, rien à
+  mettre en cache, et le son reste identique hors ligne.</p>
+
+  <h3>Le mode simple</h3>
+  <p>Un écran unique pour la personne qui prend les médicaments : plus d'onglets,
+  plus de menus. L'heure en très gros, la photo de la boîte, le nom, la dose, et
+  deux boutons — <strong>J'AI PRIS</strong> / <strong>PAS ENCORE</strong>. La
+  sortie demande trois secondes d'appui, pour qu'on n'en sorte pas par mégarde.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="traitement">
+  <h2><span class="n">5</span> Le traitement</h2>
+  <p class="lead">Dix formes galéniques, des plans de prise quotidiens,
+  hebdomadaires, par intervalle ou par cycles, une dose libre par heure —
+  un demi comprimé, un quart, un et demi.</p>
+
+  <h3>Ajouter un médicament en photographiant sa boîte</h3>
+  <ol>
+    <li><strong>Deux photos</strong> — la face avant pour le nom, le dos pour les dates.</li>
+    <li><strong>Le code-barres est lu</strong> sur le fichier d'origine, avant toute
+    réduction. Depuis 2019 la plupart des boîtes portent un Data&nbsp;Matrix GS1
+    contenant en clair le code produit, le <strong>numéro de lot</strong> et surtout
+    la <strong>date de péremption</strong>. Chrome sur Android le lit nativement,
+    hors ligne.</li>
+    <li><strong>Le texte imprimé est lu</strong> en même temps, si le téléphone en
+    est capable. L'analyseur en tire le nom, le dosage, la forme, la contenance,
+    et la péremption quand le code-barres n'était pas lisible.</li>
+    <li><strong>Le nom est reconnu</strong> par le carnet embarqué : substance active,
+    forme, dosages courants et schémas de prise habituels apparaissent.</li>
+    <li><strong>Il ne reste qu'à confirmer</strong> avec l'ordonnance.</li>
+  </ol>
+
+  <h3>La deuxième boîte est gratuite</h3>
+  <p>On rachète chaque mois les mêmes boîtes. Le code produit est mémorisé : à la
+  photo suivante, l'application reconnaît la boîte et propose de <strong>tout
+  reprendre</strong> — substance, forme, dosage, consignes, horaires. Seules la
+  péremption et le numéro de lot sont ceux de la boîte neuve.</p>
+
+  <h3>Comment le texte est lu</h3>
+  <p>Trois voies, essayées dans cet ordre.</p>
+  <table>
+    <thead><tr><th>Voie</th><th>Ce que c'est</th><th>Coût</th></tr></thead>
+    <tbody>
+      <tr><td>Native</td><td><code>TextDetector</code>, le lecteur de texte du
+      téléphone — même famille que le lecteur de code-barres. Hors ligne.
+      <em>Pas activé par défaut dans toutes les versions de Chrome.</em></td>
+      <td>zéro octet</td></tr>
+      <tr><td>Externe</td><td>Un moteur branché par <code>setOcrEngine()</code>.
+      Rien n'est embarqué, mais le point d'accroche existe et tout ce qui suit
+      est déjà écrit.</td><td>à la charge de qui le branche</td></tr>
+      <tr><td>Aucune</td><td>La photo sert de mémoire, une loupe permet de lire
+      le petit texte, la saisie reste manuelle.</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p>Ce qui compte n'est pas le moteur mais <strong>l'analyse</strong> : reconnaître
+  la péremption quand « EXP » est sur une ligne et la date sur la suivante,
+  distinguer une date de fabrication d'une date de péremption, recoller un
+  dosage dont le nombre et l'unité sont sur deux lignes, lire « 20/120&nbsp;mg »
+  comme une association et pas comme 120&nbsp;mg, comprendre
+  « 75&nbsp;microgrammes » aussi bien que « 75&nbsp;µg », et repérer le nom
+  parce que <strong>c'est le plus gros texte de la boîte</strong>. Cette partie
+  ne dépend d'aucun moteur, et elle est couverte par les tests.</p>
+
+  <div class="note" data-ico="info">
+    <div><b>Les schémas proposés ne sont pas une prescription</b>
+    Ce sont des usages courants, destinés à pré-remplir un formulaire que
+    l'ordonnance corrige. L'application l'écrit à chaque fois.</div>
+  </div>
+
+  <h3>Les garde-fous par molécule</h3>
+  <p>Le fichier <code>safety.js</code> reconnaît la famille d'un médicament d'après
+  sa substance active et applique les consignes correspondantes : le bêta-bloquant
+  qu'on n'arrête jamais brutalement, le diurétique qu'on ne décale pas le soir,
+  l'IEC qui donne une toux sèche, la gliflozine qui demande de bien boire.</p>
+  <p>Si une molécule critique n'est pas prise plusieurs jours de suite, l'accueil
+  affiche une alerte avec le bouton pour appeler le médecin.</p>
+
+  <h3>Le journal du ressenti</h3>
+  <p>Quatre à huit boutons, choisis automatiquement d'après le traitement en
+  cours : vertiges, toux sèche, jambes gonflées, brûlures urinaires. Une tape
+  suffit. L'application indique quels médicaments peuvent expliquer le symptôme,
+  et pour les signes qui ne peuvent pas attendre — gonflement du visage, selles
+  noires, malaise — elle affiche directement le bouton d'appel.</p>
+
+  <h3>Stock et péremption</h3>
+  <p>Le stock se décompte à chaque prise validée. L'application estime les jours
+  restants, prévient avant la rupture, et produit une <strong>liste pour la
+  pharmacie</strong> avec quantités, nombre de boîtes et coût estimé.
+  Les péremptions sont surveillées soixante jours à l'avance ; passée la date,
+  la ligne de prise porte la mention <em>boîte périmée</em>.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="lien">
+  <h2><span class="n">6</span> Le lien avec le proche</h2>
+  <p class="lead">Deux chemins, complémentaires : un message qu'on envoie, et un
+  compte rendu qui se met à jour tout seul.</p>
+
+  <h3>Le bulletin</h3>
+  <p>Un bouton produit un message clair — <em>« Mardi 25 : 6 prises sur 7,
+  Comprimé du soir du soir oublié »</em> — et l'envoie par WhatsApp ou n'importe quelle
+  messagerie. Rien ne quitte le téléphone sans ce geste.</p>
+
+  <h3>Le suivi à distance</h3>
+  <p>Le téléphone du patient publie un compte rendu chiffré toutes les quinze
+  minutes ; celui du proche le lit et l'affiche en haut de son accueil.</p>
+
+  <h4>Ce qu'il faut, dans l'ordre</h4>
+  <ol>
+    <li><strong>Une adresse de relais.</strong> <code>api/sync.js</code> déposé
+    sur Vercel. C'est la seule connexion réseau de toute l'application. Servie
+    depuis un vrai domaine, elle s'appelle toute seule&nbsp;: <code>/api/sync</code>.
+    <strong>Dans l'APK, non</strong> — les fichiers viennent de
+    <code>https://pilulier.local/</code>, une origine servie par la coque, où
+    <code>/api/sync</code> n'existe pas. L'adresse se renseigne donc dans
+    <em>Réglages → Suivi à distance → Adresse du relais</em>, avec un bouton
+    <em>Tester</em> qui dit franchement si le relais répond.</li>
+    <li><strong>Le code, du patient au proche.</strong> Trois façons, dans
+    l'ordre de sûreté&nbsp;: le <strong>QR</strong> — le proche photographie
+    l'écran de l'autre téléphone, et le code <em>et</em> l'adresse du relais
+    passent d'un coup, sans transiter par une messagerie ; le <strong>lien</strong>
+    envoyé par messagerie (pratique, mais le code y traîne) ; le
+    <strong>code à saisir</strong>, douze caractères, quand rien d'autre ne
+    marche.</li>
+  </ol>
+  <p>Le contenu du QR n'est pas une URL&nbsp;: c'est
+  <code>PILULIER1|&lt;code&gt;|&lt;relais&gt;</code>. Une URL finirait dans un
+  historique de navigation ; ce code-là ne se lit que dans l'application. Les
+  fonctions sont dans <code>sync.js</code>&nbsp;: <code>lienDAppairage()</code>
+  et <code>lireLienDAppairage()</code>.</p>
+
+  <div class="rule-list" id="privacy"></div>
+
+  <div class="note bad" data-ico="warn">
+    <div><b>Conséquence assumée</b>
+    Si le code d'appairage est perdu, les données publiées deviennent
+    définitivement illisibles. C'est le prix du chiffrement de bout en bout, et
+    c'est le bon prix pour des données de santé.</div>
+  </div>
+
+  <h3>Activer le stockage — trois minutes, et gratuit</h3>
+  <p>Sans base configurée, <code>api/sync.js</code> garde les blocs en mémoire :
+  suffisant pour essayer, perdu dès que la fonction s'endort — c'est-à-dire au
+  bout de quelques minutes sans trafic. Le proche verrait alors
+  <em>« rien n'a encore été publié »</em> alors que tout va bien.</p>
+  <ol>
+    <li>Sur vercel.com : projet → <strong>Storage</strong> → <strong>Create
+    Database</strong> → <em>Upstash Redis</em>, plan <strong>Free</strong>.</li>
+    <li><strong>Connect to Project</strong> — Vercel injecte les variables
+    d'environnement tout seul.</li>
+    <li>Redéployer.</li>
+  </ol>
+  <p>Le plan gratuit d'Upstash donne 256 Mo, 500 000 commandes par mois et 10 Go
+  de trafic, sans carte bancaire. Pour deux téléphones qui échangent un compte
+  rendu tous les quarts d'heure, cela représente <strong>environ 6 000 commandes
+  par mois</strong> — un peu plus de 1&nbsp;% du quota — et quelques kilo-octets
+  de stockage.</p>
+  <p>Au moment de brancher la base, Vercel propose un <em>Custom Prefix</em> :
+  <strong>on peut le laisser vide, ou y mettre ce qu'on veut</strong>. La fonction
+  ne cherche pas deux noms précis — elle cherche une <strong>paire cohérente</strong> :
+  une adresse REST en <code>https</code> et le jeton qui porte le même préfixe.
+  <code>KV_REST_API_URL</code>, <code>UPSTASH_REDIS_REST_URL</code>,
+  <code>STORAGE_REST_API_URL</code> : tout fonctionne. Ce qu'elle refuse
+  volontairement, ce sont <code>KV_URL</code> et <code>REDIS_URL</code> — des
+  chaînes <code>rediss://</code> qui exigeraient un vrai client Redis, donc une
+  dépendance npm. Elle parle à Upstash par son API REST, avec
+  <code>fetch</code>, et rien d'autre.</p>
+  <p>Un jeton en <em>lecture seule</em> est écarté lui aussi : il ferait échouer la
+  publication, et elle seule — le proche verrait « rien n'a encore été publié »
+  sans qu'aucune erreur ne l'explique.</p>
+  <div class="note" data-ico="info">
+    <div><b>Comment savoir si la base est branchée</b>
+    <em>Réglages → Adresse du relais → Tester</em>. La réponse distingue les deux
+    cas : « avec sa base » ou « sans base de données, les comptes rendus
+    s'effacent quand elle s'endort ». C'est la fonction elle-même qui le dit —
+    on ne peut pas se tromper.</div>
+  </div>
+
+  <h3>La fiche d'urgence</h3>
+  <p>Une carte de poche imprimable — pathologies, traitement complet, allergies,
+  médecin, personne à prévenir — accompagnée d'un <strong>QR code</strong> qu'un
+  secouriste lit avec l'appareil photo de n'importe quel téléphone, sans
+  application et sans réseau. L'encodeur QR est écrit à la main dans
+  <code>qr.js</code>, sans aucune dépendance ; il a été vérifié en décodant les
+  <strong>160 combinaisons</strong> de versions et de niveaux de correction.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="dessins">
+  <h2><span class="n">7</span> Tout est dessiné par le code</h2>
+  <p class="lead">Il n'y a aucune image dans le projet. Ni icône téléchargée, ni
+  jeu de pictogrammes, ni illustration importée. Quatre fichiers produisent tout
+  ce que l'application affiche.</p>
+
+  <table>
+    <thead><tr><th>Fichier</th><th>Ce qu'il fabrique</th></tr></thead>
+    <tbody>
+      <tr><td>draw.js</td><td>les primitives : trait tremblé, contour refermé qui
+      déborde, hachure en éventail, générateur déterministe</td></tr>
+      <tr><td>icons.js</td><td>les 50 icônes de l'interface</td></tr>
+      <tr><td>charts.js</td><td>les cinq graphiques : gélules, courbe, anneau, nuage, fil</td></tr>
+      <tr><td>illus.js</td><td>la marque, les scènes d'écran vide, le tampon
+      « journée complète »</td></tr>
+      <tr><td>avatars.js</td><td>les portraits de profil</td></tr>
+    </tbody>
+  </table>
+
+  <p>Les icônes ne sont pas des pictogrammes géométriques : ce sont des
+  <strong>croquis</strong>. Chaque forme est tracée d'un geste qui tremble un peu,
+  repasse son trait, et dépasse légèrement aux angles — la petite queue que laisse
+  un stylo qui revient sur son point de départ. Les formes galéniques sont ombrées
+  par une hachure en éventail, comme on ombre un dessin à la plume.</p>
+
+  <div class="gallery" id="gallery"></div>
+
+  <p>Chaque icône a une graine tirée de son nom : elle est donc toujours identique
+  à elle-même, d'un écran à l'autre et d'un jour à l'autre — mais aucune n'est
+  parfaite.</p>
+
+  <h3>Les écrans vides</h3>
+  <p>Une petite scène vaut mieux qu'une icône agrandie : elle dit ce qui manque.</p>
+  <div class="scenes-row" id="scenes"></div>
+
+  <h3>Les visages</h3>
+  <p><code>avatars.js</code> ne contient aucune image. Chaque portrait est construit
+  trait par trait à partir d'une <strong>graine</strong> : un générateur
+  déterministe tire la forme du crâne, la coiffure, les yeux, les sourcils, le nez,
+  la bouche, la pilosité, les lunettes et un éventuel accessoire. Même graine,
+  même visage, pour toujours.</p>
+  <p>Les tirages sont <strong>infléchis, pas déterminés</strong>, par le sexe et
+  l'âge du profil : un homme de 66&nbsp;ans a plus de chances d'hériter d'une
+  calvitie et de sourcils broussailleux — mais la planche de contact laisse
+  toujours le dernier mot.</p>
+
+  <h3>Les icônes de l'application</h3>
+  <pre>node tools/render-icons.mjs</pre>
+  <p>Le script écrit les SVG depuis <code>illus.js</code>, puis les rastérise si un
+  navigateur pilotable est installé. Il n'y a donc jamais deux vérités.</p>
+
+  <p>Pour tout voir d'un coup : <a href="/dessins.html">/dessins.html</a> pour les
+  icônes et illustrations à toutes les tailles, <a href="/faces.html">/faces.html</a>
+  pour soixante visages.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="style">
+  <h2><span class="n">8</span> Le style</h2>
+  <p class="lead">Papier kaki, encre, monospace, filets d'un pixel. Aucun arrondi,
+  aucune ombre, aucun dégradé décoratif. La hiérarchie vient des filets, des
+  capitales espacées et du vide.</p>
+
+  <div class="rule-list" id="style-rules"></div>
+
+  <p><strong>Le mouvement a été retiré.</strong> Plus de confettis, d'ondulations
+  au toucher, de rebonds ni de cascades. Il reste des fondus de 80 à 130&nbsp;ms
+  sur les panneaux qui entrent ou sortent, et un seul clignotement — celui qui
+  signale une prise en attente, parce qu'il porte une information.</p>
+
+  <div class="note" data-ico="warn">
+    <div><b>Aucun emoji, nulle part</b>
+    Ni dans l'interface, ni dans les bulletins envoyés par messagerie, ni dans
+    les titres d'événements de l'agenda. Ils ne se rendent pas de la même façon
+    d'un téléphone à l'autre, un lecteur d'écran ne les lit pas, et ils sont
+    étrangers au registre de la planche. Les statuts s'écrivent
+    <code>[x]</code> pris, <code>[!]</code> oublié, <code>[-]</code> sauté,
+    <code>[&nbsp;]</code> à venir — et le bulletin porte toujours sa légende.
+    <code>tools/check.mjs</code> échoue si un emoji revient dans le code.</div>
+  </div>
+
+  <div class="note" data-ico="user">
+    <div><b>Un écart assumé</b>
+    La référence emploie du 10–11&nbsp;px. L'utilisateur a 66&nbsp;ans. Les
+    micro-libellés restent petits — ce sont des repères — mais tout ce qui sert à
+    agir est en grand corps par défaut, avec des cibles tactiles de 48&nbsp;px.</div>
+  </div>
+
+  <h3>Deux planches engendrées par le code</h3>
+  <p><code>/style.html</code> montre la palette, l'échelle typographique, les
+  espacements, la géométrie, les composants et les 50 icônes — tout est lu dans
+  <code>theme.css</code> à l'affichage, donc rien ne peut mentir.
+  <code>/sorties.html</code> montre les sept fichiers que l'application produit,
+  rendus par les vraies fonctions.</p>
+
+  <h3>Où changer quoi</h3>
+  <table>
+    <thead><tr><th>Pour changer</th><th>Fichier</th></tr></thead>
+    <tbody>
+      <tr><td>Couleurs, corps, filets, durées, casse des libellés</td><td>css/theme.css</td></tr>
+      <tr><td>Forme des composants</td><td>css/app.css</td></tr>
+      <tr><td>Ce qui bouge encore</td><td>css/anim.css</td></tr>
+      <tr><td>Les dessins</td><td>js/draw.js, icons.js, illus.js</td></tr>
+      <tr><td>Les textes envoyés</td><td>js/bulletin.js</td></tr>
+      <tr><td>L'exemple fictif</td><td>js/schema.js, constante EXEMPLE</td></tr>
+    </tbody>
+  </table>
+  <p><code>app.css</code> ne contient <strong>aucune valeur brute</strong> : tout
+  vient de <code>theme.css</code>, y compris la casse des micro-libellés
+  (<code>--tt-label</code>). C'est la règle qui permet de rhabiller l'application
+  sans la refaire, et <code>check.mjs</code> la garde.</p>
+  <p>La police est embarquée — <code>fonts/mono-*.woff</code>, 16&nbsp;Ko chacune,
+  DejaVu Sans Mono sous-ensemblée. Le rendu est identique sur tous les téléphones,
+  hors ligne compris, sans appel réseau.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="architecture">
+  <h2><span class="n">9</span> Sous le capot</h2>
+  <p class="lead">Modules ES natifs, aucune étape de compilation. Chaque fichier
+  fait une chose et le dit dans son en-tête.</p>
+
+  <h3>Les graphiques</h3>
+  <p>Cinq formes, dans <code>js/charts.js</code> : la <strong>gélule</strong>
+  (une par jour, qui se remplit à mesure des prises), la <strong>courbe</strong>
+  lissée passant par chaque relevé, l'<strong>anneau fendu</strong>, le
+  <strong>nuage</strong> et le <strong>fil</strong>. Les formes viennent d'une
+  référence monochrome ; les dégradés y sont remplacés par la hachure — la
+  seule matière que la planche autorise.</p>
+  <p>La hachure ne déborde jamais : <code>hatchInside()</code> calcule les
+  entrées et sorties de chaque diagonale dans la silhouette et ne trace que ce
+  qui tombe dedans. Aucun masque SVG, donc rien qui casse à l'impression.</p>
+
+  <h3>Le plan, en volumes</h3>
+  <div class="plan" id="plan"></div>
+  <div class="plan-key">
+    <span><i data-tone="dense"></i> beaucoup de code, beaucoup de décisions</span>
+    <span><i data-tone="plein"></i> module courant</span>
+    <span><i data-tone="vide"></i> module mince, une seule responsabilité</span>
+  </div>
+  <p class="plan-note">La <strong>hauteur</strong> d'un bloc suit son poids en lignes ;
+  la <strong>densité de hachure</strong>, le nombre de décisions qu'il porte ; la
+  <strong>position</strong>, sa couche. Au fond à gauche les données, au centre la coque
+  et les vues, à droite ce qui rappelle et ce qui sort du téléphone, devant ce que
+  l'application produit. Les traits courent au sol : un bloc posé dessus les cache,
+  comme sur un plan d'atelier. Ce dessin est <strong>calculé</strong> — aucune coordonnée
+  n'est écrite à la main, déplacer une entrée dans <code>PLAN</code> le redessine.</p>
+
+  <pre>public/
+  index.html          <span class="c">coque + écran de démarrage</span>
+  doc.html            <span class="c">cette page</span>
+  dessins.html        <span class="c">la planche des dessins</span>
+  faces.html          <span class="c">soixante visages</span>
+  sw.js               <span class="c">cache hors-ligne + notifications</span>
+  fonts/              <span class="c">monospace embarquée</span>
+  css/                <span class="c">theme · app · anim · doc</span>
+  js/
+    app.js            <span class="c">coque, navigation, thème, rapport</span>
+    db.js             <span class="c">moteur relationnel + IndexedDB + dump SQL</span>
+    schema.js         <span class="c">tables, catalogues, ORDONNANCE DE DÉPART</span>
+    store.js          <span class="c">règles métier : occurrences, prises, stock</span>
+    alarm.js          <span class="c">moteur de rappel + écran d'alarme</span>
+    speech.js         <span class="c">la voix, nombres en toutes lettres</span>
+    sound.js          <span class="c">six sonneries générées</span>
+    safety.js         <span class="c">familles de molécules, consignes, alertes</span>
+    drugbook.js       <span class="c">le carnet local des médicaments</span>
+    boxscan.js        <span class="c">code-barres GS1, dates de péremption</span>
+    qr.js             <span class="c">encodeur QR complet, sans dépendance</span>
+    bulletin.js       <span class="c">les textes que l'on envoie</span>
+    sync.js           <span class="c">appairage, chiffrement, publication</span>
+    draw.js           <span class="c">primitives de dessin</span>
+    icons.js          <span class="c">les 50 icônes</span>
+    illus.js          <span class="c">marque, scènes, tampon</span>
+    avatars.js        <span class="c">générateur de visages</span>
+    ui.js             <span class="c">toasts, feuilles, dialogues, champs</span>
+    util.js           <span class="c">dates, formats</span>
+    views/            <span class="c">today · calendar · meds · suivi · settings</span>
+                      <span class="c">profiles · simple · urgence · newmed</span>
+api/
+  sync.js             <span class="c">fonction serverless : boîte aux lettres aveugle</span>
+tools/
+  check.mjs           <span class="c">vérification sans dépendance</span>
+  e2e.py              <span class="c">parcours réels dans un navigateur</span>
+  render-icons.mjs    <span class="c">fabrique les PNG depuis illus.js</span>
+  dev-server.mjs      <span class="c">statique + fonction serverless</span></pre>
+
+  <h3>À propos de SQLite</h3>
+  <p>L'application manipule quelques centaines de lignes. Embarquer SQLite compilé
+  en WebAssembly coûterait 1,5&nbsp;Mo à télécharger et à initialiser avant le
+  premier écran — une seconde de démarrage perdue sur un téléphone d'entrée de
+  gamme, exactement ce qu'on cherchait à éviter.</p>
+  <p><code>db.js</code> implémente donc un moteur relationnel minimal — tables,
+  clés, contraintes <code>ON DELETE CASCADE</code>, migrations — persisté dans
+  IndexedDB avec un miroir synchrone dans <code>localStorage</code> pour survivre
+  à une fermeture brutale. <strong>Les données ne sont pas prisonnières</strong> :
+  <code>db.toSQL()</code> produit un vrai dump SQLite, ouvrable avec
+  <code>sqlite3</code> ou DB&nbsp;Browser.</p>
+
+  <h3>Vérifier</h3>
+  <pre><span class="c"># sans rien installer : syntaxe + toute la logique pure</span>
+node tools/check.mjs
+
+<span class="c"># les parcours réels, dans un vrai navigateur</span>
+node tools/dev-server.mjs &amp;
+python3 tools/e2e.py</pre>
+  <p><code>check.mjs</code> exécute 76 vérifications : le QR, l'analyseur GS1, les
+  dates de péremption écrites en clair, le carnet de médicaments, les règles de
+  sécurité, l'exemple fictif, l'absence de toute donnée personnelle, et le fait que toute icône citée dans le code
+  existe bien. <code>e2e.py</code> en ajoute 22 : démarrage, navigation, ajout par
+  la photo, persistance, mode simple, synchronisation chiffrée.</p>
+</section>
+
+<!-- ================================================================== -->
+<section id="limites">
+  <h2><span class="n">10</span> Ce qui n'est pas promis</h2>
+  <p class="lead">Trois choses ont été délibérément écartées. Les écrire ici évite
+  de les redécouvrir dans six mois.</p>
+
+  <h3>Pas de moteur OCR embarqué</h3>
+  <p>En embarquer un coûterait plusieurs mégaoctets à télécharger, ce qui casserait
+  la promesse « tout fonctionne hors ligne » dès le premier lancement. Le lecteur
+  de texte du téléphone est utilisé quand il existe, et <code>setOcrEngine()</code>
+  permet d'en brancher un sans rien changer d'autre. Quand rien ne lit, une
+  <strong>loupe</strong> permet d'agrandir la photo pour recopier la date. Le champ
+  accepte <code>12/2027</code>, <code>DEC 2027</code>, <code>31/12/2027</code>,
+  <code>12-27</code>.</p>
+
+  <h3>Pas d'API de médicaments en ligne</h3>
+  <p>Il n'existe pas d'annuaire mondial, gratuit et interrogeable depuis un
+  navigateur, qui réponde à un code-barres par une fiche produit. Les bases
+  publiques utilisables sont nationales : openFDA et RxNorm couvrent les
+  États-Unis, la base française n'expose pas d'API. <strong>Aucune ne connaît
+  « Clopi Denk » ni « Dapaglin »</strong> — une recherche en ligne échouerait
+  précisément sur les boîtes concernées. Le carnet embarqué fait l'inverse : il
+  tient en quelques kilo-octets, fonctionne hors ligne, et couvre ce qu'on trouve
+  réellement en pharmacie ici — cardiologie, diabète, antipaludéens, antibiotiques,
+  antalgiques.</p>
+
+  <h3>Pas de fusion bidirectionnelle</h3>
+  <p>Le suivi à distance publie un <em>compte rendu</em>, pas une base. Le téléphone
+  du proche affiche, il ne modifie pas. Une vraie synchronisation à deux sens
+  demanderait des identifiants universels et une résolution de conflits — beaucoup
+  de complexité pour un besoin qui, ici, est de <strong>voir</strong>.</p>
+
+  <div class="note bad" data-ico="warn">
+    <div><b>Avertissement</b>
+    Cette application aide à ne rien oublier. Elle ne remplace ni l'ordonnance, ni
+    l'avis du médecin ou du pharmacien. Les horaires proposés au premier lancement
+    sont une interprétation d'une ordonnance manuscrite : à faire valider.</div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Pilulier — chaque trait de cette page vient du même code que l'application.
+</footer>
+
+<script type="module">
+import { ico, ICON_NAMES } from '/js/icons.js';
+import { logoMark, emptyIllus, SCENE_NAMES, archDiagram, archKey } from '/js/illus.js';
+import { VERSION } from '/js/app-version.js';
+
+document.getElementById('plate-logo').innerHTML = logoMark({ size: 100 });
+document.getElementById('v-version').textContent = VERSION;
+
+/* Les icônes annoncées dans le texte. */
+for (const n of document.querySelectorAll('[data-ico]')) {
+  n.insertAdjacentHTML('afterbegin', ico(n.dataset.ico));
+}
+
+/* Chiffres de tête. */
+const TILES = [
+  ['6', 'médicaments suivis'], ['0', 'dépendance'], ['46', 'icônes dessinées'],
+  ['640 Ko', 'poids total'], ['98', 'vérifications'], ['0', 'image'],
+];
+document.getElementById('tiles').innerHTML = TILES
+  .map(([b, s]) => `<div><b>${b}</b><small>${s}</small></div>`).join('');
+
+/* Les cinq garanties de la synchronisation. */
+const PRIVACY = [
+  "Le téléphone du patient ne publie pas sa base : il publie un compte rendu — prises du jour, observance, stock, ressenti, alertes.",
+  "Ce compte rendu est chiffré dans le navigateur, en AES-GCM 256, avec une clé dérivée du code d'appairage par PBKDF2 et 200 000 itérations.",
+  "Le code d'appairage — douze caractères, soixante bits — n'est jamais transmis. Il passe de la main à la main.",
+  "Le serveur reçoit un identifiant opaque, sans lien mathématique avec la clé, et un bloc illisible. Il ne peut savoir ni de qui ni de quoi il s'agit.",
+  "Le bloc s'efface tout seul au bout d'un mois sans publication.",
+];
+document.getElementById('privacy').innerHTML = PRIVACY
+  .map((t, i) => `<div><b>${i + 1}</b><span>${t}</span></div>`).join('');
+
+const STYLE_RULES = [
+  "<strong>Le filet sépare.</strong> Les lignes de prises se touchent et forment un tableau ; le calendrier est un vrai papier millimétré ; chaque réglage est une ligne de relevé.",
+  "<strong>La capitale espacée nomme.</strong> Les micro-libellés restent petits — ce sont des repères, pas du contenu.",
+  "<strong>L'inversion accentue.</strong> Encre pleine sur papier : l'onglet actif, le bouton principal, le jour courant, et l'écran d'alarme en entier.",
+  "<strong>Rien d'autre ne parle.</strong> Aucun dégradé décoratif, aucune illustration importée, aucun emoji, aucune couleur qui ne porte pas d'information.",
+];
+document.getElementById('style-rules').innerHTML = STYLE_RULES
+  .map((t, i) => `<div><b>${i + 1}</b><span>${t}</span></div>`).join('');
+
+/* Un échantillon d'icônes, celles qui portent le style. */
+const SHOW = ['pill', 'capsule', 'drop', 'syringe', 'spray', 'patch', 'box', 'bell',
+              'clock', 'shield', 'warn', 'settings', 'camera', 'chart', 'user', 'logo'];
+document.getElementById('gallery').innerHTML = SHOW
+  .map((n) => `<div>${ico(n)}<small>${n}</small></div>`).join('');
+
+document.getElementById('plan').innerHTML = archDiagram({ size: 900 });
+/* Les trois temoins de la legende : de vrais blocs, tires du meme generateur. */
+for (const i of document.querySelectorAll('.plan-key i')) {
+  i.innerHTML = archKey(i.dataset.tone);
+}
+
+document.getElementById('scenes').innerHTML = SCENE_NAMES
+  .map((n) => `<div>${emptyIllus(n)}</div>`).join('');
+
+/* L'index, construit depuis les titres — et qui suit la lecture. */
+const INDEX = [
+  ['Le projet', [['projet', 'Ce que c\'est', 'logo'],
+                 ['premier', 'Le premier lancement', 'user'],
+                 ['demarrer', 'Démarrer', 'play']]],
+  ['L\'usage', [['rappels', 'Les rappels', 'bell'], ['traitement', 'Le traitement', 'pill'],
+                ['lien', 'Le lien avec le proche', 'users']]],
+  ['La fabrique', [['dessins', 'Tout est dessiné', 'edit'], ['style', 'Le style', 'sun'],
+                   ['architecture', 'Sous le capot', 'settings'], ['limites', 'Ce qui n\'est pas promis', 'warn']]],
+];
+const idx = document.getElementById('index');
+idx.innerHTML = INDEX.map(([groupe, liens]) =>
+  `<h2>${groupe}</h2>` + liens.map(([id, label, icon]) =>
+    `<a href="#${id}" data-for="${id}"><i>${ico(icon)}</i><span>${label}</span></a>`).join('')
+).join('');
+for (const i of idx.querySelectorAll('i')) i.firstElementChild.style.width = '100%';
+
+const liens = new Map([...idx.querySelectorAll('a')].map((a) => [a.dataset.for, a]));
+const obs = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    for (const a of liens.values()) a.classList.remove('on');
+    liens.get(e.target.id)?.classList.add('on');
+  }
+}, { rootMargin: '-15% 0px -70% 0px' });
+for (const s of document.querySelectorAll('section')) obs.observe(s);
+</script>
+</body>
+</html>

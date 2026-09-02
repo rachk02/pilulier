@@ -1,0 +1,56 @@
+plugins { id 'com.android.application' }
+
+android {
+  namespace 'com.elimmeka.pilulier'
+  compileSdk 35
+
+  defaultConfig {
+    applicationId 'com.elimmeka.pilulier'
+    minSdk 24                 /* Android 7 — le WebView y est deja moderne  */
+    targetSdk 35
+    versionCode 20200
+    versionName '2.2.0'
+    /* Aucune bibliotheque : pas de multidex, pas de vector compat. */
+  }
+
+  /* Les langues et densites inutiles sont ecartees : l'APK ne contient que
+     ce que l'application emploie reellement. */
+  androidResources { noCompress 'woff', 'woff2' }
+
+  buildTypes {
+    release {
+      minifyEnabled true
+      shrinkResources true
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+      signingConfig signingConfigs.debug   /* remplace par ta cle, voir README */
+    }
+    debug { applicationIdSuffix '.debug'; versionNameSuffix '-debug' }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+
+  packaging {
+    resources.excludes += ['META-INF/*', 'kotlin/**', '**/*.kotlin_metadata']
+  }
+}
+
+dependencies { }   /* aucune. */
+
+/*
+ * L'application web est recopiee dans les assets avant chaque compilation.
+ * Sans cela, l'APK embarquerait une version figee de `public/` et les deux
+ * finiraient par diverger sans que personne le voie.
+ */
+tasks.register('synchroniserWeb', Exec) {
+  workingDir = rootProject.projectDir.parentFile
+  commandLine 'node', 'tools/sync-android.mjs'
+}
+tasks.configureEach { t ->
+  if (t.name ==~ /^(pre)?[Bb]uild$/ || t.name.startsWith('merge') && t.name.contains('Assets')) {
+    t.dependsOn 'synchroniserWeb'
+  }
+}

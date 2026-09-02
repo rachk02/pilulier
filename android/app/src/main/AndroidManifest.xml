@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Le manifeste dit exactement ce que l'application demande, et rien de plus.
+  Chaque permission ci-dessous sert a une chose precise et une seule ; si tu
+  en ajoutes une, ecris pourquoi a cote.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- Sonner a l'heure exacte, meme telephone endormi. C'est la raison
+       d'etre de cette APK : un navigateur ne peut pas le faire. -->
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+  <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+  <!-- Afficher la notification de prise (Android 13+). -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <!-- Ouvrir l'ecran de rappel PAR-DESSUS tout, telephone verrouille.
+       Depuis Android 10, c'est le seul moyen : un demarrage d'activite
+       depuis l'arriere-plan est ignore sans un mot. Android 14 demande en
+       plus une autorisation explicite pour les applications qui ne sont pas
+       declarees comme reveil ou telephonie. -->
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+  <!-- Re-armer les rappels apres un redemarrage du telephone. -->
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <!-- Demander l'exemption d'optimisation de batterie avec une simple boite
+       de dialogue, au lieu d'envoyer l'utilisateur chercher l'application
+       dans une liste de deux cents. Sans cette permission, la boite ne
+       s'ouvre pas et Android renvoie la liste. -->
+  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+  <!-- Vibrer et allumer l'ecran quand l'alarme sonne. -->
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <!-- Photographier la boite du medicament. -->
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-feature android:name="android.hardware.camera" android:required="false"/>
+  <!-- La synchronisation avec le proche, si elle est activee. Sans elle,
+       l'application ne joint jamais le reseau. -->
+  <uses-permission android:name="android.permission.INTERNET"/>
+
+  <application
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher"
+      android:theme="@style/ThemePilulier"
+      android:allowBackup="true"
+      android:fullBackupContent="@xml/sauvegarde"
+      android:dataExtractionRules="@xml/extraction"
+      android:supportsRtl="false"
+      android:hardwareAccelerated="true">
+
+    <activity
+        android:name=".MainActivity"
+        android:exported="true"
+        android:launchMode="singleTask"
+        android:configChanges="orientation|screenSize|keyboardHidden|uiMode|density|fontScale"
+        android:windowSoftInputMode="adjustResize"
+        android:showWhenLocked="true"
+        android:turnScreenOn="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+
+    <!-- L'ecran d'alarme s'affiche par-dessus l'ecran verrouille : quand
+         l'heure de la prise arrive, il n'y a rien a deverrouiller. -->
+
+    <receiver android:name=".RecepteurAlarme" android:exported="false"/>
+
+    <receiver android:name=".RecepteurDemarrage" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+        <action android:name="android.intent.action.TIME_SET"/>
+        <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+      </intent-filter>
+    </receiver>
+  </application>
+</manifest>

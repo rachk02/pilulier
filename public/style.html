@@ -1,0 +1,166 @@
+<!doctype html><meta charset="utf-8"><title>Pilulier — la planche de style</title>
+<link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/app.css">
+<style>
+ body{background:var(--paper);color:var(--ink);font-family:var(--font);margin:0 auto;
+      padding:22px;max-width:900px}
+ h1{font-size:12px;text-transform:uppercase;letter-spacing:.16em;margin:0 0 6px;
+    padding-bottom:8px;border-bottom:2px solid var(--ink)}
+ .sub{font-size:11px;color:var(--ink-3);margin:0 0 24px;max-width:80ch;line-height:1.6}
+ h2{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--ink-3);
+    margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+ .row{display:flex;flex-wrap:wrap;gap:0;border-left:1px solid var(--rule);
+      border-top:1px solid var(--rule)}
+ .sw{flex:1 1 128px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+     background:var(--paper-hi)}
+ .sw i{display:block;height:44px}
+ .sw b{display:block;font-size:10px;padding:6px 8px 1px;font-weight:700}
+ .sw small{display:block;font-size:9px;color:var(--ink-3);padding:0 8px 7px;
+           letter-spacing:.04em}
+ table{width:100%;border-collapse:collapse;font-size:11px;background:var(--paper-hi)}
+ th,td{border:1px solid var(--rule);padding:6px 9px;text-align:left;vertical-align:baseline}
+ th{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-3);
+    font-weight:700}
+ td.k{color:var(--ink-3);white-space:nowrap}
+ .spec{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--rule-soft);
+       padding:7px 0}
+ .spec small{flex:0 0 84px;font-size:9px;color:var(--ink-3);text-transform:uppercase;
+             letter-spacing:.12em}
+ .sp{display:flex;align-items:flex-end;gap:10px;border:1px solid var(--rule);
+     background:var(--paper-hi);padding:12px}
+ .sp div{text-align:center}
+ .sp i{display:block;background:var(--ink);width:100%}
+ .sp small{font-size:9px;color:var(--ink-3)}
+ .ico{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));
+      border-left:1px solid var(--rule);border-top:1px solid var(--rule)}
+ .ico div{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+          background:var(--paper-hi);padding:11px 4px;text-align:center}
+ .ico svg{width:26px;height:26px}
+ .ico small{display:block;font-size:8px;color:var(--ink-3);margin-top:5px}
+ .charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+         border-left:1px solid var(--rule);border-top:1px solid var(--rule)}
+ .charts>div{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+             background:var(--paper-hi);padding:14px}
+ .charts span{display:block}
+ .charts svg{width:100%;height:auto;display:block}
+ .charts b{display:block;margin-top:10px;font-size:11px;text-transform:uppercase;
+           letter-spacing:.14em}
+ .charts small{display:block;font-size:10px;color:var(--ink-3);margin-top:3px}
+ .demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center;border:1px solid var(--rule);
+       background:var(--paper-hi);padding:14px}
+ .no{border:1px solid var(--accent);padding:12px 14px;background:var(--bad-bg);
+     font-size:11px;line-height:1.65;margin-top:12px}
+ .no b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.14em;
+       margin-bottom:5px}
+</style>
+
+<h1>Pilulier — la planche de style</h1>
+<p class="sub">Une seule règle porte tout le reste : <strong>app.css ne contient aucune
+valeur brute</strong>. Couleurs, corps, filets, rayons, durées, et jusqu'à la casse des
+micro-libellés viennent de <code>theme.css</code>. Cette planche est engendrée par le
+code : ce qu'elle montre est ce que l'application affiche.</p>
+
+<h2>Papier et encre</h2>
+<div class="row" id="paper"></div>
+
+<h2>Accents — rares, jamais décoratifs</h2>
+<div class="row" id="accent"></div>
+
+<h2>Échelle typographique</h2>
+<div id="type"></div>
+
+<h2>Espacements</h2>
+<div class="sp" id="space"></div>
+
+<h2>Géométrie et mouvement</h2>
+<table id="geo"><thead><tr><th>Variable</th><th>Valeur</th><th>Ce que ça veut dire</th></tr></thead><tbody></tbody></table>
+
+<h2>Composants</h2>
+<div class="demo">
+  <button class="btn">Bouton</button>
+  <button class="btn btn-primary">Principal</button>
+  <button class="btn btn-ghost">Discret</button>
+  <button class="btn btn-danger">Danger</button>
+  <span class="chip">étiquette</span>
+  <span class="chip chip-ok">valide</span>
+  <span class="chip chip-warn">attention</span>
+  <span class="chip chip-bad">retard</span>
+  <span class="t-upper">micro-libellé</span>
+</div>
+
+<h2>Graphiques — les formes d'une référence, la matière de la planche</h2>
+<p class="sub" style="margin:0 0 12px">Lignes à bouts ronds, barres en gélules,
+aires courbes, anneau fendu, nœuds ronds : les formes viennent d'une référence
+monochrome. Les dégradés, eux, sont remplacés par la <strong>hachure</strong> —
+la seule matière que la planche autorise. Et dans un pilulier, une barre est
+une gélule : elle se remplit à mesure que les prises sont validées.</p>
+<div class="charts" id="charts"></div>
+
+<h2>Icônes — toutes tracées par le code, aucune image</h2>
+<div class="ico" id="icons"></div>
+
+<div class="no">
+  <b>Ce que le style interdit</b>
+  Aucun arrondi. Aucune ombre. Aucun dégradé décoratif. Aucune image, aucun jeu de
+  pictogrammes importé, aucune police distante. <strong>Aucun emoji</strong> — les statuts
+  s'écrivent [x] [!] [-] [ ]. Aucune couleur qui ne porte pas d'information. Aucun
+  mouvement qui n'annonce pas un changement d'état.
+</div>
+
+<script type="module">
+import { ico, ICON_NAMES } from '/js/icons.js';
+import { pilulierBars, splineChart, arcRing, scatterNodes, sparkline } from '/js/charts.js';
+const cs = getComputedStyle(document.documentElement);
+const V = (n) => cs.getPropertyValue(n).trim();
+
+const swatches = (id, list) => {
+  document.getElementById(id).innerHTML = list.map(([v, label]) =>
+    `<div class="sw"><i style="background:var(${v})"></i><b>${label}</b><small>${v} · ${V(v)}</small></div>`).join('');
+};
+swatches('paper', [['--paper','fond'],['--paper-hi','panneau'],['--paper-lo','creux'],
+  ['--paper-dim','inactif'],['--ink','encre'],['--ink-2','secondaire'],['--ink-3','repère'],
+  ['--rule','filet'],['--rule-soft','filet discret'],['--rule-hard','filet appuyé']]);
+swatches('accent', [['--accent','urgence, retard'],['--ok','validé'],['--warn','attention'],
+  ['--info','information']]);
+
+const TYPE = [['--fs-4xl','chiffre géant'],['--fs-3xl','pourcentage du jour'],
+  ['--fs-2xl','titre de panneau'],['--fs-xl','heure de prise'],['--fs-lg','sous-titre'],
+  ['--fs-md','texte courant'],['--fs-sm','texte dense'],['--fs-xs','micro-libellé']];
+document.getElementById('type').innerHTML = TYPE.map(([v, r]) =>
+  `<div class="spec"><small>${v.replace('--fs-','')}</small>
+   <span style="font-size:var(${v});font-weight:700;line-height:1.1">Aa 25 août</span>
+   <span style="font-size:10px;color:var(--ink-3)">${V(v)} · ${r}</span></div>`).join('');
+
+document.getElementById('space').innerHTML = ['--s-1','--s-2','--s-3','--s-4','--s-5',
+  '--s-6','--s-8','--s-10','--s-12'].map((v) =>
+  `<div><i style="height:var(${v});width:${V(v)}"></i><small>${V(v)}</small></div>`).join('');
+
+const GEO = [['--hair', 'épaisseur du filet standard'],
+  ['--hair-hard', 'filet appuyé : cadre de panneau, case à cocher'],
+  ['--r-md', 'rayon — nul partout, c\'est une planche'],
+  ['--sh-2', 'ombre — aucune, la hiérarchie vient des filets'],
+  ['--touch', 'cible tactile minimale'],
+  ['--tabbar-h', 'hauteur de la barre d\'onglets'],
+  ['--app-max', 'largeur maximale du contenu'],
+  ['--tracking-label', 'interlettrage des capitales'],
+  ['--tt-label', 'casse des micro-libellés'],
+  ['--t-fast', 'fondu court'], ['--t-base', 'fondu standard'],
+  ['--ease-out', 'la seule courbe employée']];
+document.querySelector('#geo tbody').innerHTML = GEO.map(([v, r]) =>
+  `<tr><td class="k">${v}</td><td><strong>${V(v) || '—'}</strong></td><td>${r}</td></tr>`).join('');
+
+const jours = [100,86,100,42,100,100,64,100,0,null,100,92,78,100].map((r) => ({ rate: r }));
+const haute = [[0,138],[1,145],[2,132],[3,141],[4,128],[5,136],[6,130]];
+const basse = [[0,86],[1,92],[2,84],[3,88],[4,80],[5,85],[6,82]];
+document.getElementById('charts').innerHTML = [
+  ['Gélules', 'une par jour, remplie à mesure', pilulierBars(jours, { w: 300, h: 132 })],
+  ['Courbe', 'la bande est l\'écart entre les deux', splineChart([{points:haute},{points:basse}], { w: 300, h: 132 })],
+  ['Anneau fendu', 'plein · hachuré · vide', arcRing([{valeur:172,densite:'plein'},{valeur:14,densite:'moyen'},{valeur:6,densite:'vide'}], { size: 132 })],
+  ['Nuage', 'zone de repère hachurée', scatterNodes(haute.map((t,i)=>[t[1],basse[i][1],i===haute.length-1]), { w: 300, h: 170, zone: { x:[110,140], y:[70,90] } })],
+  ['Fil', 'une tendance dans une ligne de texte', sparkline([3,5,4,7,6,9,8])],
+].map(([t, d, svg]) => `<div><span>${svg}</span><b>${t}</b><small>${d}</small></div>`).join('');
+
+document.getElementById('icons').innerHTML = ICON_NAMES
+  .map((n) => `<div>${ico(n)}<small>${n}</small></div>`).join('');
+document.body.dataset.pret = '1';
+</script>

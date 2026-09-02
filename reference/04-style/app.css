@@ -1,0 +1,961 @@
+/* ==========================================================================
+   APP.CSS — composants dessines comme une planche technique.
+   Aucune valeur brute : tout vient de theme.css.
+   Regle de composition : un filet separe, une capitale espacee nomme, le vide
+   hierarchise. Pas d'ombre, pas d'arrondi, pas de degrade.
+   ========================================================================== */
+
+*,*::before,*::after { box-sizing:border-box }
+* { margin:0; padding:0 }
+html { -webkit-text-size-adjust:100%; height:100% }
+body {
+  font-family:var(--font); font-size:var(--fs-md); font-weight:var(--fw-normal);
+  line-height:var(--lh-normal); color:var(--ink);
+  background:var(--paper); min-height:100dvh; overscroll-behavior-y:none;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent;
+}
+img,svg { display:block; max-width:100% }
+.card > svg, .banner > svg, .row > svg, .col > svg, .alarm > svg { width:18px; height:18px; flex:none }
+button,input,select,textarea { font:inherit; color:inherit; background:none; border:none }
+input[type="range"], input[type="checkbox"], input[type="radio"] { accent-color:var(--ink) }
+input[type="range"] { height:34px }
+button { cursor:pointer }
+a { color:var(--ink); text-decoration:underline; text-underline-offset:3px }
+:focus-visible { outline:2px solid var(--ink); outline-offset:1px }
+::selection { background:var(--ink); color:var(--paper) }
+::-webkit-scrollbar { width:6px; height:6px }
+::-webkit-scrollbar-thumb { background:var(--rule) }
+
+/* ---------- Typographie ---------- */
+h1,h2,h3 { line-height:var(--lh-tight); font-weight:var(--fw-bold) }
+.t-title  { font-size:var(--fs-2xl); font-weight:var(--fw-bold) }
+.t-h2     { font-size:var(--fs-xl);  font-weight:var(--fw-bold) }
+.t-h3     { font-size:var(--fs-lg);  font-weight:var(--fw-bold) }
+.t-body   { font-size:var(--fs-md) }
+.t-sm     { font-size:var(--fs-sm) }
+.t-xs     { font-size:var(--fs-xs) }
+.t-mute   { color:var(--ink-3) }
+.t-soft   { color:var(--ink-2) }
+.t-num    { font-variant-numeric:tabular-nums }
+.t-center { text-align:center }
+/* Le micro-libelle : capitales, tres espacees, jamais plus grand qu'un repere. */
+.t-upper  { text-transform:var(--tt-label); letter-spacing:var(--tracking-label);
+            font-weight:var(--fw-bold); font-size:var(--fs-xs); color:var(--ink-3) }
+/* La date du jour, en capitales sur la planche. */
+.t-date   { text-transform:var(--tt-label); letter-spacing:var(--tk-num) }
+.truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:0 1 auto }
+svg.chev  { width:16px; height:16px; flex:none; color:var(--ink-3) }
+
+/* ---------- Grilles ---------- */
+.row { display:flex; align-items:center; gap:var(--s-3) }
+.row-between { display:flex; align-items:center; justify-content:space-between; gap:var(--s-3) }
+.col { display:flex; flex-direction:column; gap:var(--s-3) }
+.grow { flex:1; min-width:0 }
+.wrap { flex-wrap:wrap }
+.gap-1{gap:var(--s-1)} .gap-2{gap:var(--s-2)} .gap-4{gap:var(--s-4)} .gap-6{gap:var(--s-6)}
+.hidden { display:none !important }
+
+/* ==========================================================================
+   COQUE
+   ========================================================================== */
+#app { min-height:100dvh; display:flex; flex-direction:column }
+
+.topbar {
+  position:sticky; top:0; z-index:40; background:var(--paper);
+  padding:calc(env(safe-area-inset-top) + var(--s-3)) var(--s-4) var(--s-3);
+  border-bottom:var(--hair) solid var(--rule);
+  display:flex; align-items:center; min-height:var(--topbar-h);
+}
+.topbar-inner { width:100%; max-width:var(--app-max); margin-inline:auto;
+                display:flex; align-items:center; gap:var(--s-3) }
+.topbar h1 { font-size:var(--fs-sm); text-transform:var(--tt-label);
+             letter-spacing:var(--tracking-label); font-weight:var(--fw-bold) }
+
+.main { flex:1; width:100%; max-width:var(--app-max); margin-inline:auto;
+        padding:var(--s-4) var(--s-4) calc(var(--tabbar-h) + env(safe-area-inset-bottom) + var(--s-10)) }
+
+/* ---------- Barre d'onglets : cinq cases d'un meme registre ---------- */
+.tabbar {
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  display:grid; grid-template-columns:repeat(5,1fr);
+  background:var(--paper); border-top:var(--hair) solid var(--rule);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tab {
+  position:relative; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:3px; min-height:var(--tabbar-h);
+  border-right:var(--hair) solid var(--rule-soft); color:var(--ink-3);
+  font-size:var(--fs-xs); text-transform:var(--tt-label); letter-spacing:var(--tk-2);
+  transition:background-color var(--t-fast) linear, color var(--t-fast) linear;
+}
+.tab:last-child { border-right:none }
+.tab svg { width:20px; height:20px }
+.tab span { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+            padding-inline:2px }
+.tab[aria-selected="true"] { background:var(--ink); color:var(--paper) }
+.tab .badge-dot { position:absolute; top:7px; right:calc(50% - 20px);
+                  width:7px; height:7px; background:var(--accent) }
+.tab[aria-selected="true"] .badge-dot { background:var(--paper) }
+
+/* ==========================================================================
+   BOUTONS — cadres, capitales, aucune rondeur
+   ========================================================================== */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s-2);
+  min-height:var(--touch); padding:0 var(--s-4);
+  border:var(--hair) solid var(--ink); background:transparent; color:var(--ink);
+  font-size:var(--fs-sm); font-weight:var(--fw-bold);
+  text-transform:var(--tt-label); letter-spacing:var(--tk-3); white-space:nowrap;
+  transition:background-color var(--t-fast) linear, color var(--t-fast) linear;
+}
+.btn:active { background:var(--ink); color:var(--paper) }
+.btn:disabled { opacity:.4; pointer-events:none }
+.btn svg { width:17px; height:17px; flex:none }
+
+.btn-primary { background:var(--ink); color:var(--paper) }
+.btn-primary:active { background:var(--paper); color:var(--ink) }
+.btn-ghost   { border-color:var(--rule); color:var(--ink-2) }
+.btn-outline { border-color:var(--rule-hard) }
+.btn-danger  { border-color:var(--accent); color:var(--accent) }
+.btn-danger:active { background:var(--accent); color:var(--accent-ink) }
+.btn-quiet   { border:none; color:var(--ink-3); min-height:auto;
+               padding:var(--s-2) var(--s-2); text-decoration:underline;
+               text-underline-offset:3px; letter-spacing:var(--tk-1) }
+.btn-quiet:active { background:transparent; color:var(--ink) }
+.btn-block   { width:100%; display:flex }
+.btn-sm      { min-height:34px; padding:0 var(--s-3); font-size:var(--fs-xs) }
+.btn-lg      { min-height:58px; font-size:var(--fs-md) }
+
+.icon-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:var(--touch); height:var(--touch); flex:none;
+  border:var(--hair) solid transparent; color:var(--ink-2); background:transparent;
+  transition:background-color var(--t-fast) linear, color var(--t-fast) linear;
+}
+.icon-btn:active { background:var(--ink); color:var(--paper) }
+.icon-btn svg { width:19px; height:19px }
+.icon-btn.solid { border-color:var(--ink); color:var(--ink) }
+
+.fab { position:fixed; right:var(--s-4); z-index:45;
+       bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom) + var(--s-4));
+       display:inline-flex; align-items:center; gap:var(--s-2); height:50px;
+       padding:0 var(--s-4); background:var(--ink); color:var(--paper);
+       font-size:var(--fs-xs); text-transform:var(--tt-label); letter-spacing:var(--tk-3) }
+.fab svg { width:18px; height:18px }
+
+/* ==========================================================================
+   PANNEAUX
+   ========================================================================== */
+.card { background:var(--paper-hi); border:var(--hair) solid var(--rule);
+        padding:var(--s-4) }
+/* Fiche indexee par une couleur de reperage, comme un onglet de dossier. */
+.card-keyed { border-left:4px solid var(--pillcolor, var(--ink)) }
+.card-flush { padding:0 }
+
+/* Le panneau d'en-tete : cadre appuye + reperes de coupe aux quatre coins. */
+.card-hero {
+  position:relative; background:var(--paper-hi);
+  border:var(--hair-hard) solid var(--ink); padding:var(--s-5) var(--s-4);
+}
+.card-hero::before, .card-hero::after {
+  content:""; position:absolute; width:9px; height:9px; pointer-events:none;
+  border:var(--hair-hard) solid var(--ink);
+}
+.card-hero::before { top:5px; left:5px; border-right:none; border-bottom:none }
+.card-hero::after  { bottom:5px; right:5px; border-left:none; border-top:none }
+
+.section { margin-block:var(--s-6) }
+.section-head { display:flex; align-items:center; justify-content:space-between;
+                gap:var(--s-3); padding-bottom:var(--s-2); margin-bottom:var(--s-3);
+                border-bottom:var(--hair) solid var(--rule) }
+.section-head h2 { font-size:var(--fs-xs); text-transform:var(--tt-label);
+                   letter-spacing:var(--tracking-label); color:var(--ink-3) }
+.divider { height:0; border:none; border-top:var(--hair) solid var(--rule); margin:var(--s-4) 0 }
+
+/* ---------- Etiquettes ---------- */
+.chip {
+  display:inline-flex; align-items:center; gap:5px; padding:4px var(--s-2);
+  border:var(--hair) solid var(--rule); color:var(--ink-2);
+  font-size:var(--fs-xs); text-transform:var(--tt-label); letter-spacing:var(--tk-2);
+  white-space:nowrap; background:transparent;
+}
+.chip svg { width:12px; height:12px }
+.chip-ok   { border-color:var(--ok);   color:var(--ok);   background:var(--ok-bg) }
+.chip-warn { border-color:var(--warn); color:var(--warn); background:var(--warn-bg) }
+.chip-bad  { border-color:var(--bad);  color:var(--bad);  background:var(--bad-bg) }
+.chip-info { border-color:var(--info); color:var(--info); background:var(--info-bg) }
+.chip-brand{ border-color:var(--ink);  color:var(--ink) }
+
+.chip-select { display:flex; gap:var(--s-2); overflow-x:auto; padding-bottom:var(--s-2);
+               scrollbar-width:none }
+.chip-select::-webkit-scrollbar { display:none }
+.chip-select .chip { cursor:pointer; min-height:38px; padding:0 var(--s-3);
+                     font-size:var(--fs-xs) }
+.chip-select .chip[aria-pressed="true"] { background:var(--ink); color:var(--paper);
+                                          border-color:var(--ink) }
+
+/* ==========================================================================
+   IDENTITES — plaques carrees, pas de medaillons
+   ========================================================================== */
+/* Le portrait est trace en `currentColor` : on fixe l'encre ici pour qu'il ne
+   s'inverse pas quand il est pose sur un bouton actif. */
+.avatar { color:var(--ink); position:relative; flex:none; width:40px; height:40px;
+          border:var(--hair) solid var(--rule-hard); background:var(--paper-lo);
+          display:grid; place-items:center; overflow:hidden }
+.avatar img, .avatar svg { width:100%; height:100%; object-fit:cover }
+.avatar-xs { width:26px; height:26px }
+.avatar-sm { width:34px; height:34px }
+.avatar-lg { width:58px; height:58px }
+.avatar-xl { width:88px; height:88px }
+.avatar-2xl{ width:120px; height:120px }
+.avatar-ring { outline:var(--hair-hard) solid var(--ink); outline-offset:2px }
+
+.profile-switch { display:flex; gap:var(--s-3); overflow-x:auto; padding-bottom:var(--s-3) }
+.profile-pick { display:flex; flex-direction:column; align-items:center; gap:6px;
+                width:74px; flex:none; font-size:var(--fs-xs); color:var(--ink-3) }
+.profile-pick[aria-selected="true"] { color:var(--ink) }
+
+/* La planche de contact : une grille de vignettes qui se touchent. */
+.face-sheet { display:grid; grid-template-columns:repeat(6,1fr); gap:0;
+              border-left:var(--hair) solid var(--rule); border-top:var(--hair) solid var(--rule) }
+.face-cell { position:relative; aspect-ratio:1; padding:0; background:var(--paper-lo);
+             border-right:var(--hair) solid var(--rule); border-bottom:var(--hair) solid var(--rule);
+             transition:outline-color var(--t-fast) linear }
+.face-cell svg { width:100%; height:100% }
+.face-cell[aria-pressed="true"] { outline:var(--hair-hard) solid var(--ink); outline-offset:-2px;
+                                  z-index:1 }
+@media (max-width:380px) { .face-sheet { grid-template-columns:repeat(4,1fr) } }
+
+/* ==========================================================================
+   JAUGE DU JOUR — un segment par prise, comme une reglette d'instrument
+   ========================================================================== */
+.gauge { display:flex; gap:3px; height:26px; margin:var(--s-3) 0 }
+.gauge i { flex:1; display:block; border:var(--hair) solid var(--rule-hard);
+           background:transparent; transition:background-color var(--t-base) linear }
+.gauge i.on   { background:var(--ink); border-color:var(--ink) }
+.gauge i.late { background:var(--bad-bg); border-color:var(--accent) }
+.gauge i.skip { background:repeating-linear-gradient(45deg, var(--rule) 0 2px, transparent 2px 5px) }
+.gauge-read { display:flex; align-items:baseline; gap:var(--s-3) }
+.gauge-read b { font-size:var(--fs-3xl); font-weight:var(--fw-bold);
+                font-variant-numeric:tabular-nums; line-height:1 }
+
+/* Ancien anneau conserve pour compatibilite, neutralise. */
+.ring-wrap { display:none }
+
+/* ==========================================================================
+   LIGNE DU TEMPS
+   ========================================================================== */
+.timeblock { margin-bottom:var(--s-5) }
+.timeblock-head { display:flex; align-items:center; gap:var(--s-3); margin-bottom:var(--s-2) }
+.timeblock-time { font-size:var(--fs-xl); font-weight:var(--fw-bold);
+                  font-variant-numeric:tabular-nums; letter-spacing:var(--tk-num) }
+.timeblock-line { flex:1; height:0; border-top:var(--hair) solid var(--rule) }
+.timeblock.is-now .timeblock-time { color:var(--accent) }
+.timeblock.is-now .timeblock-head::after {
+  content:"maintenant"; font-size:var(--fs-xs); text-transform:var(--tt-label);
+  letter-spacing:var(--tracking-label); color:var(--accent-ink);
+  background:var(--accent); padding:3px 7px }
+
+/* La prise : une ligne de releve. Les lignes se touchent et forment un tableau. */
+.dose {
+  position:relative; display:flex; align-items:center; gap:var(--s-3);
+  padding:var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+  background:var(--paper-hi); border:var(--hair) solid var(--rule);
+  margin-bottom:-1px;
+  transition:background-color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+.dose::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+                background:var(--pillcolor, var(--ink)) }
+.dose-pill { width:38px; height:38px; flex:none; display:grid; place-items:center;
+             border:var(--hair) solid var(--pillcolor, var(--rule-hard)); background:var(--paper) }
+.dose-pill svg { width:20px; height:20px; color:var(--pillcolor, var(--ink-2)) }
+.dose-body { flex:1; min-width:0 }
+.dose-name { font-weight:var(--fw-bold); font-size:var(--fs-md); letter-spacing:var(--tk-body) }
+.dose-meta { font-size:var(--fs-xs); color:var(--ink-3); text-transform:var(--tt-label);
+             letter-spacing:var(--tk-1); margin-top:2px }
+.dose-actions { display:flex; gap:var(--s-2); flex:none }
+
+.dose.is-taken   { background:var(--paper); color:var(--ink-3) }
+.dose.is-taken .dose-name { text-decoration:line-through }
+.dose.is-taken::before { opacity:.35 }
+.dose.is-skipped { color:var(--ink-3) }
+.dose.is-skipped .dose-name { text-decoration:line-through; text-decoration-style:dotted }
+.dose.is-late    { border-color:var(--accent); background:var(--bad-bg); z-index:1 }
+.dose.is-due     { border-color:var(--ink); border-width:var(--hair-hard); z-index:1 }
+
+/* La case a cocher : un carre, comme sur un formulaire papier. */
+.take-btn { width:42px; height:42px; flex:none; display:grid; place-items:center;
+            border:var(--hair-hard) solid var(--rule-hard); color:transparent;
+            background:var(--paper);
+            transition:background-color var(--t-fast) linear, color var(--t-fast) linear,
+                       border-color var(--t-fast) linear }
+.take-btn svg { width:22px; height:22px }
+.take-btn:active { border-color:var(--ink) }
+.take-btn.on { background:var(--ink); border-color:var(--ink); color:var(--paper) }
+.dose.is-due .take-btn { border-color:var(--ink) }
+.dose.is-late .take-btn { border-color:var(--accent) }
+
+/* ==========================================================================
+   CALENDRIER — papier millimetre
+   ========================================================================== */
+.cal { background:var(--paper-hi); border:var(--hair) solid var(--rule); padding:var(--s-3) }
+.cal-head { display:flex; align-items:center; justify-content:space-between;
+            padding-bottom:var(--s-2); margin-bottom:var(--s-2);
+            border-bottom:var(--hair) solid var(--rule) }
+.cal-head b { font-size:var(--fs-sm); text-transform:var(--tt-label); letter-spacing:var(--tracking-label) }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:0;
+            border-left:var(--hair) solid var(--rule-soft);
+            border-top:var(--hair) solid var(--rule-soft) }
+.cal-dow { text-align:center; font-size:var(--fs-xs); color:var(--ink-3);
+           letter-spacing:var(--tk-1); padding:var(--s-2) 0;
+           border-right:var(--hair) solid var(--rule-soft);
+           border-bottom:var(--hair) solid var(--rule-soft) }
+.cal-day { position:relative; aspect-ratio:1; display:flex; flex-direction:column;
+           align-items:center; justify-content:center; gap:4px;
+           font-size:var(--fs-sm); font-variant-numeric:tabular-nums;
+           border-right:var(--hair) solid var(--rule-soft);
+           border-bottom:var(--hair) solid var(--rule-soft);
+           transition:background-color var(--t-fast) linear, color var(--t-fast) linear }
+.cal-day.other { color:var(--ink-3); opacity:.45 }
+.cal-day.today { background:var(--ink); color:var(--paper); font-weight:var(--fw-bold) }
+.cal-day.sel   { outline:var(--hair-hard) solid var(--ink); outline-offset:-2px }
+.cal-day .dots { display:flex; gap:2px; height:5px }
+.cal-day .dots i { width:5px; height:5px; display:block }
+.dot-ok{background:var(--ok)} .dot-bad{background:var(--bad)}
+.dot-warn{background:var(--warn)} .dot-idle{background:var(--rule)}
+.cal-day.today .dots i { background:var(--paper) }
+
+/* ==========================================================================
+   FORMULAIRES
+   ========================================================================== */
+.field { display:flex; flex-direction:column; gap:6px; margin-bottom:var(--s-4) }
+.field > label { font-size:var(--fs-xs); text-transform:var(--tt-label);
+                 letter-spacing:var(--tracking-label); color:var(--ink-3) }
+.field .hint { font-size:var(--fs-xs); color:var(--ink-3) }
+.field .err  { font-size:var(--fs-xs); color:var(--accent) }
+
+.input, .select, .textarea {
+  width:100%; min-height:var(--touch); padding:var(--s-2) var(--s-3);
+  background:var(--paper); border:var(--hair) solid var(--rule-hard);
+  color:var(--ink); font-size:var(--fs-md);
+  transition:border-color var(--t-fast) linear;
+}
+.input::placeholder, .textarea::placeholder { color:var(--ink-3) }
+.input:focus, .select:focus, .textarea:focus { outline:none; border-color:var(--ink);
+                                               box-shadow:inset 0 0 0 1px var(--ink) }
+.input[aria-invalid="true"] { border-color:var(--accent) }
+.textarea { min-height:88px; resize:vertical }
+.select { appearance:none; padding-right:var(--s-8);
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236d6750' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right var(--s-3) center; background-size:16px }
+.input-inline { display:flex; gap:var(--s-2) }
+.input-inline .input { flex:1 }
+
+/* Interrupteur : un curseur carre dans un rail, lisible sans couleur. */
+.switch { position:relative; width:56px; height:30px; flex:none;
+          border:var(--hair) solid var(--rule-hard); background:var(--paper) }
+.switch::after { content:""; position:absolute; top:3px; left:3px;
+                 width:22px; height:22px; background:var(--rule);
+                 transition:transform var(--t-base) var(--ease-out),
+                            background-color var(--t-base) linear }
+.switch[aria-checked="true"] { border-color:var(--ink) }
+.switch[aria-checked="true"]::after { transform:translateX(26px); background:var(--ink) }
+
+/* La ligne de releve : libelle a gauche, valeur a droite, filet dessous. */
+.setting-row { display:flex; align-items:center; gap:var(--s-3);
+               padding:var(--s-3); min-height:var(--touch); width:100%;
+               text-align:left; border-bottom:var(--hair) solid var(--rule-soft);
+               background:transparent }
+.setting-row:last-child { border-bottom:none }
+.setting-row .grow b { display:block; font-weight:var(--fw-normal) }
+.setting-row .grow small { display:block; color:var(--ink-3); font-size:var(--fs-xs);
+                           margin-top:2px }
+.setting-row > span.t-sm, .setting-row > span.t-mute { color:var(--ink-2);
+                           font-variant-numeric:tabular-nums; flex:none }
+
+/* Le selecteur d'une ligne de reglage : etroit sur la planche, ou la
+   monospace est compacte ; une peau plus large peut le laisser respirer. */
+.select-compact { max-width:150px }
+
+.time-list { display:flex; flex-wrap:wrap; gap:var(--s-2) }
+.time-tag { display:inline-flex; align-items:center; gap:var(--s-2);
+            padding:6px var(--s-2) 6px var(--s-3); border:var(--hair) solid var(--ink);
+            font-variant-numeric:tabular-nums; font-weight:var(--fw-bold) }
+.time-tag button { display:grid; place-items:center; width:20px; height:20px;
+                   border:var(--hair) solid var(--rule) }
+.time-tag button svg { width:11px; height:11px }
+
+/* ==========================================================================
+   COUCHES : feuilles, dialogues, messages
+   ========================================================================== */
+.scrim { position:fixed; inset:0; z-index:60; background:var(--overlay);
+         animation:fadeIn var(--t-fast) linear both }
+.scrim.is-closing { animation:fadeOut var(--t-fast) linear both }
+
+.sheet {
+  position:fixed; left:0; right:0; bottom:0; z-index:61; max-height:92dvh;
+  display:flex; flex-direction:column; background:var(--paper);
+  border-top:var(--hair-hard) solid var(--ink);
+  animation:sheetUp var(--t-base) var(--ease-out) both;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.sheet.is-closing { animation:sheetDown var(--t-fast) var(--ease-out) both }
+.sheet-inner { width:100%; max-width:var(--app-max); margin-inline:auto;
+               display:flex; flex-direction:column; min-height:0 }
+.sheet-grab { width:36px; height:3px; background:var(--rule); margin:var(--s-2) auto 0 }
+.sheet-head { display:flex; align-items:center; gap:var(--s-3);
+              padding:var(--s-3) var(--s-4); border-bottom:var(--hair) solid var(--rule) }
+.sheet-head h2 { flex:1; font-size:var(--fs-sm); text-transform:var(--tt-label);
+                 letter-spacing:var(--tracking-label) }
+.sheet-body { overflow-y:auto; padding:var(--s-4) var(--s-4) var(--s-6);
+              -webkit-overflow-scrolling:touch }
+.sheet-foot { padding:var(--s-3) var(--s-4); border-top:var(--hair) solid var(--rule);
+              display:flex; gap:var(--s-2); background:var(--paper) }
+.sheet-foot .btn { flex:1 }
+
+.dialog { position:fixed; z-index:61; left:50%; top:50%; transform:translate(-50%,-50%);
+          width:min(400px, calc(100vw - var(--s-8))); background:var(--paper);
+          border:var(--hair-hard) solid var(--ink); padding:var(--s-5);
+          animation:fadeIn var(--t-base) var(--ease-out) both; text-align:left }
+.dialog h2 { font-size:var(--fs-sm); text-transform:var(--tt-label);
+             letter-spacing:var(--tracking-label); margin-bottom:var(--s-3);
+             padding-bottom:var(--s-2); border-bottom:var(--hair) solid var(--rule) }
+.dialog p { color:var(--ink-2); font-size:var(--fs-sm); margin-bottom:var(--s-5) }
+.dialog .row { gap:var(--s-2) } .dialog .btn { flex:1 }
+
+.toast-host { position:fixed; left:0; right:0; z-index:80; display:flex;
+              flex-direction:column; align-items:center; gap:var(--s-2);
+              pointer-events:none; padding-inline:var(--s-4);
+              bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom) + var(--s-3)) }
+.toast { display:flex; align-items:center; gap:var(--s-3);
+         max-width:calc(100vw - var(--s-8)); padding:var(--s-3) var(--s-4);
+         background:var(--ink); color:var(--paper); font-size:var(--fs-sm);
+         border:var(--hair) solid var(--ink);
+         animation:fadeIn var(--t-fast) linear both; pointer-events:auto }
+.toast.is-closing { animation:fadeOut var(--t-fast) linear both }
+.toast svg { width:16px; height:16px; flex:none }
+.toast.ok  { border-color:var(--ok) }
+.toast.ok svg  { color:var(--ok-on-ink) }
+.toast.bad { border-color:var(--accent) }
+.toast.bad svg { color:var(--bad-on-ink) }
+.toast button { color:inherit; text-decoration:underline; text-underline-offset:3px;
+                flex:none; text-transform:var(--tt-label); font-size:var(--fs-xs);
+                letter-spacing:var(--tk-3) }
+
+/* ==========================================================================
+   ALARME — la planche tiree en negatif, impossible a confondre
+   ========================================================================== */
+.alarm {
+  position:fixed; inset:0; z-index:100; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:var(--s-4); text-align:center;
+  padding:var(--s-6) var(--s-4) calc(var(--s-6) + env(safe-area-inset-bottom));
+  color:var(--paper); background:var(--ink);
+  animation:fadeIn var(--t-fast) linear both; overflow-y:auto;
+}
+.alarm.is-closing { animation:fadeOut var(--t-fast) linear both }
+.alarm-bell { width:64px; height:64px; display:grid; place-items:center;
+              border:var(--hair-hard) solid var(--paper) }
+.alarm-bell svg { width:32px; height:32px }
+.alarm-time { font-size:var(--fs-4xl); font-weight:var(--fw-bold); line-height:1;
+              font-variant-numeric:tabular-nums; letter-spacing:var(--tk-body) }
+.alarm h2 { font-size:var(--fs-xs); text-transform:var(--tt-label);
+            letter-spacing:var(--tracking-label); opacity:.75 }
+.alarm-list { width:100%; max-width:400px; display:flex; flex-direction:column }
+.alarm-item { display:flex; align-items:center; gap:var(--s-3);
+              padding:var(--s-3); text-align:left;
+              border:var(--hair) solid rgba(255,255,255,.28); margin-bottom:-1px }
+.alarm-item > svg { width:22px; height:22px; flex:none }
+.alarm-item .grow { min-width:0 }
+.alarm-item b { display:block; font-size:var(--fs-md) }
+.alarm-item small { font-size:var(--fs-xs); text-transform:var(--tt-label);
+                    letter-spacing:var(--tk-1); opacity:.7 }
+.alarm-actions { width:100%; max-width:400px; display:flex; flex-direction:column;
+                 gap:var(--s-2) }
+.alarm .btn { border-color:var(--paper); color:var(--paper) }
+.alarm .btn-primary { background:var(--paper); color:var(--ink) }
+.alarm .btn-ghost { border-color:rgba(255,255,255,.4) }
+.alarm .btn-quiet { border:none; color:rgba(255,255,255,.75) }
+.alarm .pulse-ring::before, .alarm .pulse-ring::after { display:none }
+
+/* ==========================================================================
+   RELEVES ET GRAPHIQUES
+   ========================================================================== */
+.stat-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0 }
+.stat { background:var(--paper-hi); border:var(--hair) solid var(--rule);
+        padding:var(--s-3); margin:0 -0.5px -1px 0 }
+.stat b { display:block; font-size:var(--fs-2xl); font-weight:var(--fw-bold);
+          line-height:1.1; font-variant-numeric:tabular-nums }
+.stat small { display:block; margin-top:4px; color:var(--ink-3); font-size:var(--fs-xs);
+              text-transform:var(--tt-label); letter-spacing:var(--tk-2) }
+
+.bars { display:flex; align-items:flex-end; gap:2px; height:118px;
+        border-bottom:var(--hair) solid var(--rule-hard); padding-top:var(--s-2) }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;
+           height:100% }
+.bar-track { flex:1; width:100%; display:flex; align-items:flex-end;
+             border-left:var(--hair) solid var(--rule-soft) }
+.bar-col:last-child .bar-track { border-right:var(--hair) solid var(--rule-soft) }
+.bar-fill { width:100%; background:var(--ink);
+            transition:height var(--t-lazy) var(--ease-out) }
+.bar-col small { font-size:10px; color:var(--ink-3) }
+
+.legend { display:flex; flex-wrap:wrap; gap:var(--s-3); font-size:var(--fs-xs);
+          color:var(--ink-3); text-transform:var(--tt-label); letter-spacing:var(--tk-1) }
+.legend i { width:8px; height:8px; display:inline-block; margin-right:5px }
+
+.stockbar { height:8px; border:var(--hair) solid var(--rule-hard); background:var(--paper) }
+.stockbar i { display:block; height:100%; background:var(--ink);
+              transition:width var(--t-lazy) var(--ease-out) }
+.stockbar.low i { background:repeating-linear-gradient(45deg,
+                  var(--warn) 0 3px, transparent 3px 6px); }
+.stockbar.out i { background:var(--accent) }
+
+/* ==========================================================================
+   ETATS VIDES ET BANDEAUX
+   ========================================================================== */
+.empty { display:flex; flex-direction:column; align-items:center; gap:var(--s-3);
+         padding:var(--s-10) var(--s-4); text-align:center; color:var(--ink-3);
+         border:var(--hair) dashed var(--rule) }
+.empty svg { width:42px; height:42px; opacity:.5 }
+.empty .empty-art { width:min(190px, 60%); margin-bottom:var(--s-1) }
+.empty .empty-art svg { width:100%; height:auto; opacity:.6 }
+.empty h3 { color:var(--ink); font-size:var(--fs-sm); text-transform:var(--tt-label);
+            letter-spacing:var(--tracking-label) }
+
+.banner { display:flex; gap:var(--s-3); padding:var(--s-3);
+          border:var(--hair) solid var(--warn); background:var(--warn-bg);
+          color:var(--ink); font-size:var(--fs-sm); align-items:flex-start }
+.banner > svg { width:18px; height:18px; flex:none; margin-top:2px; color:var(--warn) }
+.banner b { display:block; font-size:var(--fs-xs); text-transform:var(--tt-label);
+            letter-spacing:var(--tracking-label); margin-bottom:3px }
+.banner-info { border-color:var(--info); background:var(--info-bg) }
+.banner-info > svg { color:var(--info) }
+.banner-bad  { border-color:var(--accent); background:var(--bad-bg) }
+.banner-bad > svg { color:var(--accent) }
+
+/* ==========================================================================
+   DEMARRAGE
+   ========================================================================== */
+#splash { position:fixed; inset:0; z-index:200; display:grid; place-items:center;
+          background:var(--paper); transition:opacity var(--t-base) linear }
+#splash.gone { opacity:0; pointer-events:none }
+#splash .mark { display:flex; flex-direction:column; align-items:center; gap:var(--s-3) }
+#splash #splash-mark { width:64px; height:64px; color:var(--ink) }
+#splash svg { width:100%; height:100%; color:var(--ink) }
+#splash b { font-size:var(--fs-sm)!important; text-transform:var(--tt-label);
+            letter-spacing:var(--tracking-label) }
+#splash small { color:var(--ink-3); font-size:var(--fs-xs);
+                text-transform:var(--tt-label); letter-spacing:var(--tk-3) }
+
+/* Restes de l'ancien theme, neutralises. */
+.ripple, .confetti-piece, .skeleton::after { display:none!important }
+.pulse-ring::before, .pulse-ring::after { display:none }
+
+/* ==========================================================================
+   LES GRAPHIQUES
+   Toujours la meme anatomie : micro-libelle et periode, chiffre en grand,
+   dessin, deux faits en pied. Le dessin lui-meme vient de charts.js — ici on
+   ne pose que le cadre.
+   ========================================================================== */
+.chart-card { background:var(--paper-hi); border:var(--hair) solid var(--rule);
+              padding:var(--s-4); margin-bottom:var(--s-3) }
+.chart-head { display:flex; justify-content:space-between; align-items:baseline;
+              gap:var(--s-3); font-size:var(--fs-xs); color:var(--ink-3);
+              text-transform:var(--tt-label); letter-spacing:var(--tracking-label) }
+.chart-head b { color:var(--ink-2); font-weight:var(--fw-bold) }
+.chart-value { display:flex; align-items:baseline; gap:var(--s-2);
+               margin:var(--s-2) 0 0 }
+.chart-value b { font-size:var(--fs-3xl); font-weight:var(--fw-bold); line-height:1.05 }
+.chart-value small { font-size:var(--fs-xs); color:var(--ink-3);
+                     text-transform:var(--tt-label); letter-spacing:var(--tk-1) }
+.chart-plot { margin:var(--s-3) 0 }
+.chart-plot.with-side { display:flex; align-items:center; gap:var(--s-4) }
+.chart-svg { flex:1; min-width:0 }
+.chart-svg svg { width:100%; height:auto; display:block }
+.chart-plot.with-side .chart-svg { flex:0 0 132px; max-width:132px }
+.ring-legend { flex:1; font-size:var(--fs-sm); line-height:1.9; color:var(--ink-2) }
+.ring-legend b { color:var(--ink); font-weight:var(--fw-bold) }
+.chart-foot { display:flex; justify-content:space-between; gap:var(--s-3);
+              padding-top:var(--s-2); border-top:var(--hair) solid var(--rule-soft);
+              font-size:var(--fs-xs); color:var(--ink-3) }
+
+/* ==========================================================================
+   LE RAPPORT DU MEDECIN
+   Une page batie avec la meme grammaire que l'application : plaque
+   signaletique en tete, filets, capitales espacees, cases cochees dessinees.
+   Elle s'affiche a l'ecran comme elle s'imprime.
+   ========================================================================== */
+.report { background:var(--paper); color:var(--ink); padding:var(--s-2) }
+.report-head { display:flex; flex-wrap:wrap; align-items:stretch;
+               border:var(--hair-hard) solid var(--ink); margin-bottom:var(--s-5) }
+.report-mark { display:flex; align-items:center; gap:var(--s-3); padding:var(--s-3);
+               border-right:var(--hair) solid var(--rule); flex:1 1 210px }
+.report-mark b { display:block; font-size:var(--fs-sm); font-weight:var(--fw-bold);
+                 text-transform:var(--tt-label); letter-spacing:var(--tracking-label) }
+.report-logo { display:block; width:34px; height:34px; flex:none }
+.report-logo svg { width:100%; height:100% }
+.report-cell { flex:1 1 118px; padding:var(--s-3);
+               border-right:var(--hair) solid var(--rule) }
+.report-cell:last-child { border-right:none }
+.report-cell small { display:block; font-size:var(--fs-xs); color:var(--ink-3);
+                     text-transform:var(--tt-label); letter-spacing:var(--tracking-label) }
+.report-cell b { display:block; font-size:var(--fs-md); font-weight:var(--fw-bold);
+                 margin-top:3px }
+.report-title { font-size:var(--fs-2xl); font-weight:var(--fw-bold); line-height:1.15;
+                margin-bottom:var(--s-2) }
+
+.report-table { width:100%; border-collapse:collapse; font-size:var(--fs-sm);
+                background:var(--paper-hi); border:var(--hair) solid var(--rule) }
+.report-table th { text-align:left; font-size:var(--fs-xs); color:var(--ink-3);
+                   text-transform:var(--tt-label); letter-spacing:var(--tracking-label);
+                   font-weight:var(--fw-bold); padding:var(--s-2);
+                   border-bottom:var(--hair-hard) solid var(--ink) }
+.report-table td { padding:var(--s-2); border-bottom:var(--hair) solid var(--rule-soft);
+                   vertical-align:baseline }
+.report-table tr:last-child td { border-bottom:none }
+
+/* Les sept derniers jours : une colonne par jour, une case par prise. */
+.report-days { display:grid; grid-template-columns:repeat(7,1fr); gap:0;
+               border-left:var(--hair) solid var(--rule);
+               border-top:var(--hair) solid var(--rule) }
+.report-day { border-right:var(--hair) solid var(--rule);
+              border-bottom:var(--hair) solid var(--rule);
+              background:var(--paper-hi); padding:var(--s-2); text-align:center }
+.report-marks { display:flex; flex-wrap:wrap; justify-content:center; gap:3px;
+                margin-top:var(--s-2) }
+.report-mark-i { display:block; width:17px; height:17px }
+.report-mark-i svg { width:100%; height:100% }
+.report-legend { display:flex; flex-wrap:wrap; gap:var(--s-4); margin-top:var(--s-3) }
+.report-leg { display:inline-flex; align-items:center; gap:6px; font-size:var(--fs-xs);
+              color:var(--ink-2) }
+.report-leg i { display:block; width:15px; height:15px }
+.report-leg i svg { width:100%; height:100% }
+.report-foot { margin-top:var(--s-8); padding-top:var(--s-3);
+               border-top:var(--hair) solid var(--rule);
+               font-size:var(--fs-xs); color:var(--ink-3); line-height:1.6 }
+
+/* ==========================================================================
+   IMPRESSION
+   ========================================================================== */
+/*
+ * L'imprimante ne doit pas fabriquer un autre document.
+ *
+ * On imprimait autrefois en noir sur blanc — c'etait economiser de l'encre au
+ * prix de l'identite : le medecin recevait une page anonyme, sans rapport avec
+ * ce que l'aidant a sous les yeux. La feuille garde donc son papier kaki, ses
+ * filets et ses accents. `print-color-adjust: exact` est la condition : sans
+ * lui, le navigateur retire les aplats de fond « pour rendre service ».
+ *
+ * Le mode sombre, lui, n'a pas de sens sur du papier : on force le tirage
+ * clair, quel que soit le reglage de l'ecran.
+ */
+@media print {
+  :root, :root[data-theme="dark"] {
+    --paper:      #cdc499; --paper-hi: #d4cca4; --paper-lo: #c2b98c;
+    --paper-dim:  #b8ae7e;
+    --ink:        #1e1c14; --ink-2: #494430; --ink-3: #6d6750; --ink-inv: #ded6b0;
+    --rule:       #9a9169; --rule-soft: #b3a97f; --rule-hard: #6e6749;
+    --accent:     #8f3122; --accent-ink: #f0e7c4;
+    --ok: #3d6630; --warn: #8a6218; --bad: #8f3122; --info: #2f5068;
+  }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important }
+  html, body { background:var(--paper) !important; color:var(--ink) }
+  .topbar, .tabbar, .fab, .toast-host, #splash, .sheet-backdrop, .sheet,
+  .dialog, .dialog-backdrop { display:none !important }
+  .main { padding:0; max-width:none }
+  .card, .card-hero, .dose, .stat, .cal, .urgence-card { break-inside:avoid }
+  h1, h2, h3 { break-after:avoid }
+  tr, .urgence-med, .urgence-row { break-inside:avoid }
+  @page { margin:12mm }
+}
+
+/* ==========================================================================
+   ECRANS LARGES
+   ========================================================================== */
+@media (min-width:760px) {
+  :root { --app-max: 700px }
+  .stat-grid { grid-template-columns:repeat(4,1fr) }
+  .tabbar { left:50%; right:auto; transform:translateX(-50%); bottom:0;
+            width:min(700px, 100vw); border-left:var(--hair) solid var(--rule);
+            border-right:var(--hair) solid var(--rule) }
+  .sheet { left:50%; transform:translateX(-50%); width:min(600px,100vw);
+           border:var(--hair-hard) solid var(--ink); max-height:88dvh }
+}
+
+/* ==========================================================================
+   PHOTOS DE BOITES
+   ========================================================================== */
+.med-photo { width:100%; max-height:190px; object-fit:cover;
+             border:var(--hair) solid var(--rule); background:var(--paper-lo) }
+.photo-field { display:flex; flex-direction:column; gap:var(--s-2) }
+.photo-field .med-photo { max-height:150px }
+.alarm-photo { width:44px; height:44px; flex:none; object-fit:cover;
+               border:var(--hair) solid rgba(255,255,255,.4) }
+
+/* ==========================================================================
+   SYMPTOMES
+   ========================================================================== */
+.symptom-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0;
+                border-left:var(--hair) solid var(--rule);
+                border-top:var(--hair) solid var(--rule) }
+.symptom-btn { display:flex; align-items:center; gap:var(--s-2);
+               min-height:var(--touch); padding:var(--s-3);
+               border-right:var(--hair) solid var(--rule);
+               border-bottom:var(--hair) solid var(--rule);
+               background:var(--paper-hi); text-align:left; font-size:var(--fs-sm);
+               transition:background-color var(--t-fast) linear, color var(--t-fast) linear }
+.symptom-btn svg { width:18px; height:18px; flex:none; color:var(--ink-3) }
+.symptom-btn:active { background:var(--ink); color:var(--paper) }
+.symptom-btn:active svg { color:var(--paper) }
+@media (min-width:520px) { .symptom-grid { grid-template-columns:repeat(3,1fr) } }
+
+/* ==========================================================================
+   BULLETIN
+   ========================================================================== */
+/* L'apercu du bulletin : du texte brut, sauf les lignes de prise qui portent
+   leur case cochee dessinee. Le reste garde `pre-wrap` pour que l'alignement
+   des colonnes du texte envoye reste visible. */
+.bulletin-preview { font-family:var(--font); font-size:var(--fs-sm);
+                    line-height:1.5; background:var(--paper-lo); padding:var(--s-3);
+                    border:var(--hair) solid var(--rule); overflow-x:auto }
+.bl-plain { white-space:pre-wrap; min-height:1.5em }
+.bl-dose  { display:flex; align-items:flex-start; gap:var(--s-2); padding:2px 0 }
+.bl-mark  { flex:none; width:19px; height:19px; margin-top:1px; color:var(--ink) }
+.bl-mark svg { width:100%; height:100% }
+.bl-text  { white-space:pre-wrap; flex:1; min-width:0 }
+.bl-legend { display:flex; flex-wrap:wrap; gap:var(--s-3); padding:var(--s-2) 0 }
+.bl-leg   { display:inline-flex; align-items:center; gap:5px; font-size:var(--fs-xs);
+            color:var(--ink-2) }
+.bl-leg i { display:block; width:15px; height:15px }
+.bl-leg i svg { width:100%; height:100% }
+
+/* ==========================================================================
+   FICHE D'URGENCE
+   ========================================================================== */
+.urgence-card { border:var(--hair-hard) solid var(--ink); padding:var(--s-3);
+                background:var(--paper-hi) }
+.urgence-head { display:flex; justify-content:space-between; align-items:baseline;
+                border-bottom:var(--hair) solid var(--rule); padding-bottom:var(--s-2);
+                margin-bottom:var(--s-2) }
+.urgence-head b { font-size:var(--fs-xs); text-transform:var(--tt-label);
+                  letter-spacing:var(--tracking-label) }
+.urgence-name { font-size:var(--fs-xl); font-weight:var(--fw-bold); line-height:1.1 }
+.urgence-row { display:flex; gap:var(--s-2); padding:5px 0;
+               border-bottom:var(--hair) solid var(--rule-soft); font-size:var(--fs-sm) }
+.urgence-row .t-upper { flex:0 0 92px }
+.urgence-row.strong { font-weight:var(--fw-bold) }
+.urgence-meds { margin-top:var(--s-3) }
+.urgence-med { display:flex; justify-content:space-between; gap:var(--s-2);
+               padding:4px 0; border-bottom:var(--hair) solid var(--rule-soft);
+               font-size:var(--fs-sm) }
+.urgence-med b { font-weight:var(--fw-bold) }
+.urgence-qr { display:flex; flex-direction:column; align-items:center; gap:var(--s-2);
+              margin-top:var(--s-3) }
+.urgence-qr svg { width:100%; max-width:190px; height:auto;
+                  border:var(--hair) solid var(--rule) }
+/* L'en-tete de la feuille imprimee : une ligne de plaque, pas un titre de
+   document bureautique. */
+.urgence-print-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--s-3);
+                      padding-bottom:var(--s-2); margin-bottom:var(--s-4);
+                      border-bottom:var(--hair-hard) solid var(--ink) }
+.urgence-print-head b { font-size:var(--fs-sm); text-transform:var(--tt-label);
+                        letter-spacing:var(--tracking-label) }
+.urgence-print-head span { color:var(--ink-3) }
+.urgence-copies { display:flex; align-items:flex-start; gap:var(--s-3); cursor:pointer;
+                  border:var(--hair) solid var(--rule); background:var(--paper-hi);
+                  padding:var(--s-3) }
+.urgence-copies input { margin-top:2px; width:20px; height:20px; flex:none }
+.urgence-copies b { display:block }
+
+.urgence-print { display:grid; gap:10mm }
+.urgence-cut { border:var(--hair) dashed var(--rule-hard); padding:6mm; break-inside:avoid;
+               display:grid; grid-template-columns:1fr 42mm; gap:6mm; align-items:start }
+.urgence-cut .urgence-qr svg { max-width:42mm }
+
+/* ==========================================================================
+   MODE SIMPLE — l'ecran du patient
+   ========================================================================== */
+body.is-simple { background:var(--paper) }
+body.is-simple .main { padding:0; max-width:none }
+.simple { min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+          gap:var(--s-4); padding:calc(env(safe-area-inset-top) + var(--s-4)) var(--s-4)
+          calc(env(safe-area-inset-bottom) + var(--s-4)); text-align:center }
+.simple-top { width:100%; max-width:520px; display:flex; align-items:center;
+              justify-content:space-between; padding-bottom:var(--s-2);
+              border-bottom:var(--hair) solid var(--rule) }
+.simple-count { font-size:var(--fs-lg); font-weight:var(--fw-bold) }
+
+.simple-hour { width:100%; max-width:520px }
+.simple-time { font-size:clamp(3.5rem, 22vw, 6rem); font-weight:var(--fw-bold);
+               line-height:1; letter-spacing:var(--tk-body) }
+.simple-hour.late .simple-time { color:var(--accent) }
+.simple-hour.late .t-upper { color:var(--accent) }
+
+.simple-card { width:100%; max-width:520px; border:var(--hair-hard) solid var(--ink);
+               padding:var(--s-4); background:var(--paper-hi);
+               border-left:8px solid var(--pillcolor, var(--ink)) }
+.simple-photo { width:100%; height:min(38vh, 260px); overflow:hidden;
+                border:var(--hair) solid var(--rule); background:var(--paper-lo);
+                display:grid; place-items:center; margin-bottom:var(--s-3) }
+.simple-photo img { width:100%; height:100%; object-fit:cover }
+.simple-photo.simple-photo-empty { height:118px }
+.simple-photo-empty svg { width:56px; height:56px; color:var(--pillcolor, var(--ink-3)) }
+.simple-name { font-size:clamp(1.6rem, 8vw, 2.4rem); font-weight:var(--fw-bold);
+               line-height:1.15 }
+.simple-dose { font-size:clamp(1.1rem, 5vw, 1.5rem); margin-top:var(--s-2) }
+.simple-food { margin-top:var(--s-2); font-size:var(--fs-sm); text-transform:var(--tt-label);
+               letter-spacing:var(--tracking-label); color:var(--ink-2);
+               border-top:var(--hair) solid var(--rule); padding-top:var(--s-2) }
+.simple-more { margin-top:var(--s-2); font-size:var(--fs-xs); color:var(--ink-3) }
+
+.simple-actions { width:100%; max-width:520px; display:flex; flex-direction:column;
+                  gap:var(--s-3); margin-top:auto }
+.simple-btn { display:flex; align-items:center; justify-content:center; gap:var(--s-3);
+              min-height:88px; border:var(--hair-hard) solid var(--ink);
+              font-size:clamp(1.1rem, 5.5vw, 1.6rem); font-weight:var(--fw-bold);
+              letter-spacing:var(--tk-1);
+              transition:background-color var(--t-fast) linear, color var(--t-fast) linear }
+.simple-btn svg { width:34px; height:34px; flex:none }
+.simple-yes { background:var(--ink); color:var(--paper) }
+.simple-yes:active { background:var(--paper); color:var(--ink) }
+.simple-no { background:transparent; color:var(--ink) }
+.simple-no:active { background:var(--ink); color:var(--paper) }
+.simple-listen { display:flex; align-items:center; gap:var(--s-2); padding:var(--s-2) var(--s-4);
+                 border:var(--hair) solid var(--rule); color:var(--ink-2);
+                 font-size:var(--fs-sm); text-transform:var(--tt-label); letter-spacing:var(--tk-2) }
+.simple-listen svg { width:18px; height:18px }
+
+.simple-done { display:flex; flex-direction:column; align-items:center; gap:var(--s-4);
+               margin:auto 0 }
+.simple-check { width:96px; height:96px; display:grid; place-items:center;
+                border:var(--hair-hard) solid var(--ink) }
+.simple-check svg { width:74px; height:74px }
+.simple-big { font-size:clamp(1.6rem, 9vw, 2.6rem); font-weight:var(--fw-bold) }
+.simple-sub { color:var(--ink-2); font-size:var(--fs-md); max-width:340px }
+
+.simple-exit { width:100%; max-width:520px; margin-top:var(--s-4) }
+.simple-exit-btn { position:relative; overflow:hidden; width:100%; min-height:44px;
+                   color:var(--ink-3); font-size:var(--fs-xs); text-transform:var(--tt-label);
+                   letter-spacing:var(--tracking-label);
+                   border-top:var(--hair) solid var(--rule-soft) }
+.simple-exit-btn::after { content:""; position:absolute; left:0; bottom:0; height:3px;
+                          width:0; background:var(--ink); transition:width 3s linear }
+.simple-exit-btn.holding::after { width:100% }
+
+@media print {
+  .urgence-print { display:grid }
+  .urgence-cut { border:var(--hair) dashed var(--rule-hard) }
+}
+
+/* ==========================================================================
+   AJOUT PAR LA PHOTO
+   ========================================================================== */
+.step { margin-bottom: var(--s-6) }
+.step-head { display:flex; align-items:center; gap:var(--s-2); margin-bottom:var(--s-3);
+             padding-bottom:var(--s-2); border-bottom:var(--hair) solid var(--rule) }
+.step-n { display:grid; place-items:center; width:22px; height:22px; flex:none;
+          border:var(--hair) solid var(--ink); font-size:var(--fs-xs);
+          font-weight:var(--fw-bold) }
+
+.shot-pair { display:grid; grid-template-columns:1fr 1fr; gap:var(--s-2) }
+.shot { position:relative; overflow:hidden; width:100%; aspect-ratio:4/3;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:4px; padding:var(--s-2); text-align:center;
+        border:var(--hair) dashed var(--rule-hard); background:var(--paper-lo);
+        color:var(--ink-2); transition:border-color var(--t-fast) linear }
+.shot:active { border-color:var(--ink) }
+.shot svg { width:26px; height:26px }
+.shot b { font-size:var(--fs-xs); text-transform:var(--tt-label); letter-spacing:var(--tk-3) }
+.shot small { font-size:var(--fs-xs); color:var(--ink-3) }
+.shot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover }
+.shot-tag { position:absolute; left:0; bottom:0; padding:2px 6px;
+            background:var(--ink); color:var(--paper); font-size:var(--fs-xs);
+            text-transform:var(--tt-label); letter-spacing:var(--tk-3) }
+
+.plan-choice { display:flex; align-items:center; gap:var(--s-3); width:100%; text-align:left;
+               padding:var(--s-3); border:var(--hair) solid var(--rule);
+               background:var(--paper-hi);
+               transition:background-color var(--t-fast) linear, color var(--t-fast) linear,
+                          border-color var(--t-fast) linear }
+.plan-choice[aria-pressed="true"] { background:var(--ink); color:var(--paper);
+                                    border-color:var(--ink) }
+.plan-choice[aria-pressed="true"] .t-mute { color:rgba(255,255,255,.7) }
+
+.zoom-pane { width:100%; height:min(46dvh, 340px); overflow:auto;
+             border:var(--hair) solid var(--rule); background:var(--paper-lo) }
+.zoom-pane img { display:block; max-width:none }
+
+/* ==========================================================================
+   LE PREMIER LANCEMENT
+   Il occupe l'ecran entier, sans barres ni onglets : tant qu'on n'a pas dit
+   pour qui est ce carnet, il n'y a rien a naviguer. Chaque ecran tient sans
+   defiler sur un telephone ordinaire.
+   ========================================================================== */
+body.is-onboarding { overflow:hidden }
+.ob { position:fixed; inset:0; z-index:200; background:var(--paper);
+      display:flex; flex-direction:column; overflow-y:auto }
+.ob-page { flex:1; width:100%; max-width:var(--app-max); margin-inline:auto;
+           display:flex; flex-direction:column;
+           padding:calc(env(safe-area-inset-top) + var(--s-6)) var(--s-4)
+                   calc(env(safe-area-inset-bottom) + var(--s-4)) }
+/* La progression : des tirets, pour savoir combien il reste. */
+.ob-steps { display:flex; gap:5px; margin-bottom:var(--s-6) }
+.ob-steps i { flex:1; height:3px; background:var(--rule-soft) }
+.ob-steps i.on { background:var(--ink) }
+
+.ob-body { flex:1; display:flex; flex-direction:column; gap:var(--s-4) }
+.ob-mark { width:74px; height:74px }
+.ob-mark svg { width:100%; height:100% }
+.ob-title { font-size:var(--fs-2xl); font-weight:var(--fw-bold);
+            text-transform:var(--tt-label); letter-spacing:var(--tracking-label) }
+.ob-h { font-size:var(--fs-xl); font-weight:var(--fw-bold); line-height:1.2 }
+.ob-lead { font-size:var(--fs-md); color:var(--ink-2); line-height:var(--lh-normal) }
+.ob-scene { max-width:190px; margin-inline:auto }
+.ob-scene svg { width:100%; height:auto }
+
+.ob-points { display:flex; flex-direction:column; gap:0;
+             border-top:var(--hair) solid var(--rule) }
+.ob-point { display:flex; align-items:flex-start; gap:var(--s-3);
+            padding:var(--s-3) 0; border-bottom:var(--hair) solid var(--rule) }
+.ob-point b { display:block; font-size:var(--fs-md) }
+.ob-point span:not(.ob-ico) { display:block; font-size:var(--fs-sm); color:var(--ink-3);
+                              margin-top:2px; line-height:1.5 }
+.ob-ico { flex:none; width:24px; height:24px; color:var(--ink-2); margin-top:2px }
+.ob-ico svg { width:100%; height:100% }
+
+.ob-choix { display:flex; flex-direction:column; gap:var(--s-2) }
+.ob-opt { display:flex; align-items:flex-start; gap:var(--s-3); width:100%;
+          text-align:left; padding:var(--s-4);
+          border:var(--hair) solid var(--rule); background:var(--paper-hi);
+          transition:background-color var(--t-fast) linear }
+.ob-opt:active { background:var(--paper-lo) }
+.ob-opt[aria-pressed="true"] { border-color:var(--ink); border-width:var(--hair-hard) }
+.ob-opt b { display:block; font-size:var(--fs-md); font-weight:var(--fw-bold) }
+.ob-opt span:not(.ob-ico) { display:block; font-size:var(--fs-sm); color:var(--ink-3);
+                            margin-top:3px; line-height:1.5 }
+
+.ob-faces { display:grid; grid-template-columns:repeat(6,1fr); gap:0;
+            border-left:var(--hair) solid var(--rule);
+            border-top:var(--hair) solid var(--rule) }
+.ob-face { aspect-ratio:1; padding:0; background:var(--paper-lo); color:var(--ink);
+           border-right:var(--hair) solid var(--rule);
+           border-bottom:var(--hair) solid var(--rule) }
+.ob-face svg { width:100%; height:100% }
+.ob-face[aria-pressed="true"] { outline:var(--hair-hard) solid var(--ink);
+                                outline-offset:-2px; background:var(--paper-hi) }
+.ob-input { font-size:var(--fs-lg); min-height:var(--touch) }
+
+.ob-foot { display:flex; gap:var(--s-2); align-items:center;
+           padding-top:var(--s-4); margin-top:var(--s-4);
+           border-top:var(--hair) solid var(--rule) }
+.ob-foot .grow { flex:1 }
+
+/* ---------- La conversion de devise ---------- */
+.conv-box { border:var(--hair) solid var(--rule); background:var(--paper-lo);
+            padding:var(--s-3) }
+.conv-row { display:flex; align-items:baseline; gap:var(--s-2);
+            padding:3px 0; font-size:var(--fs-sm) }
+.conv-arrow { color:var(--ink-3) }
+.conv-total { margin-top:var(--s-2); padding-top:var(--s-2);
+              border-top:var(--hair) solid var(--rule-soft);
+              font-size:var(--fs-xs); color:var(--ink-3) }
